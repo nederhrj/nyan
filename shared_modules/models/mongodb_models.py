@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,7 +20,7 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
 """
 @author karsten jeschkies <jeskar@web.de>
@@ -37,9 +37,11 @@ class Vendor(Document):
     feed_url = StringField()
     config = StringField()
 
+
 class Features(EmbeddedDocument):
     version = StringField()
     data = DynamicField()
+
 
 class Article(Document):
     vendor = ReferenceField(Vendor)
@@ -50,73 +52,77 @@ class Article(Document):
     content = StringField()
     features = EmbeddedDocumentField(Features)
     date = DateTimeField() #the date the article was saved
-    
+
     meta = {
-            'indexes': ['date']
-            }
+        'indexes': ['date']
+    }
+
 
 class RankedArticle(Document):
-    '''
+    """
     Defines a ranked article for user with ObjectId == user_id.
     user_id is not a reference.
-    '''
+    """
     user_id = ObjectIdField()
     article = ReferenceField(Article)
     rating = FloatField()
-    
+
     meta = {
-            'indexes': ['user_id']
-            }
-    
+        'indexes': ['user_id']
+    }
+
+
 class Feedback(Document):
-    '''
+    """
     User feedback. Can be:
     - a read article
     - a deleted article (not implemented)
     - a starred article (not implemented)
-    '''
+    """
     article = ReferenceField(Article)
     user_id = ObjectIdField()
-    
+
     meta = {
-            'indexes': ['user_id']
-            }
-    
+        'indexes': ['user_id']
+    }
+
+
 class ReadArticleFeedback(Feedback):
-    '''
+    """
     User intrinsic feedback.
     Indicates that the article was read by user with ObjectId == user_id
     score is a float calculated from reading time indicating importance of 
     article (not implemented).
-    '''
+    """
     score = FloatField()
 
-    
+
 class UserModel(Document):
-    '''
+    """
     The learnt user model...
-    '''
+    """
     user_id = ObjectIdField()
     version = StringField()
     data = DynamicField()
-    
+
     meta = {
-            'indexes': ['user_id']
-            }
+        'indexes': ['user_id']
+    }
+
 
 class User(Document):
-    '''
+    """
     User credentials saved in database.
     
     password is a sha256 hashed hexdigest
     
     Ranked and feedback articles are saved in their own collections.
-    '''
+    """
     email = StringField(required=True)
     name = StringField()
     password = StringField(required=True)
     subscriptions = ListField(ReferenceField(Vendor))
-    
+
     meta = {
-            'indexes': ['email']
-            }
+        'indexes': ['email']
+    }

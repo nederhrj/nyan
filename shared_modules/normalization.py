@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,15 +20,15 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
-'''
+"""
 Created on 10.12.2012
 
 @author: karsten jeschkies <jeskar@web.de>
 
 Methods to normalize vectors.
-'''
+"""
 
 import logging
 import numpy
@@ -36,7 +36,7 @@ import numpy
 logger = logging.getLogger('main')
 
 def calculate_mean_and_std_deviation(X):
-    '''
+    """
     Caluclates mean and standard deviation of sample features.
     
     Parameters
@@ -46,7 +46,7 @@ def calculate_mean_and_std_deviation(X):
     Returns
     -------
     theta, sigma
-    '''
+    """
     
     _, n_features = X.shape
     
@@ -60,7 +60,7 @@ def calculate_mean_and_std_deviation(X):
     return theta, sigma
     
 def normalize(X, theta, sigma):
-    '''
+    """
     Normalizes sample features.
     
     self.theta_ and self.sigma_ have to be set.
@@ -72,7 +72,7 @@ def normalize(X, theta, sigma):
     Returns
     -------
     normalized X
-    '''
+    """
         
     n_samples, n_features = X.shape
     

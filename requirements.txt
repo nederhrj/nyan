@@ -1,8 +1,8 @@
-yaml
+pyyaml
 gensim
 numpy
 scipy
-stomp,py
+stomp.py
 scikit-learn
 flask
 flask-login

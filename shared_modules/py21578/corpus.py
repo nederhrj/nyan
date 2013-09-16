@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,9 +20,9 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
-'''
+"""
 Created on 09.12.2012
 
 @author: karsten jeschkies <jeskar@web.de>
@@ -32,39 +32,40 @@ USE THE BRANCH IF IT IS NOT MERGED YET: https://github.com/piskvorky/gensim/tree
 
 Some classes which make the access to the Reuters-21578 dataset easier.
 
-'''
+"""
 
 from itertools import chain
-import numpy as np
+
 
 class ReutersCorpus(object):
-    '''
+    """
     Complete Reuters corpus.
     
     Is iterable
-    '''
+    """
 
 
     def __init__(self, database):
-        '''
+        """
         Constructor
         
         Parameters
         ----------
         database : InMemoryDatabase to use
-        '''
-        
+        """
+
         self.db = database
-        
+
     def __iter__(self):
-        '''
+        """
         Iterates over all documents and yields just the text of a document.
-        '''
+        """
         for doc in self.db.get_documents():
             yield doc[0]
-            
+
+
 class ModLewisSplitCorpus(ReutersCorpus):
-    '''
+    """
     Get the the Modified Lewis ("ModLewis") Split from Reuters-21578 dataset.
     
     Training Set (13,625 docs): LEWISSPLIT="TRAIN";  TOPICS="YES" or "NO"
@@ -72,12 +73,12 @@ class ModLewisSplitCorpus(ReutersCorpus):
     Unused (1,765): LEWISSPLIT="NOT-USED" or TOPICS="BYPASS"
     
     See VIII.A. The Modified Lewis ("ModLewis") Split in README of dataset.
-    '''
-    
+    """
+
     def get_training_set(self):
-        '''
+        """
         Generator over training set
-        '''
+        """
         for doc in self.db.get_conn().execute("""SELECT body 
                                         FROM documents 
                                         WHERE (LEWISSPLIT='TRAIN' AND 
@@ -86,11 +87,11 @@ class ModLewisSplitCorpus(ReutersCorpus):
                                               TOPICS_Attribute='NO')
                                         ORDER BY NEWID"""):
             yield doc[0]
-            
+
     def get_test_set(self):
-        '''
+        """
         Generator over test set
-        '''
+        """
         for doc in self.db.get_conn().execute("""SELECT body 
                                         FROM documents 
                                         WHERE (LEWISSPLIT='TEST' AND 
@@ -99,20 +100,20 @@ class ModLewisSplitCorpus(ReutersCorpus):
                                               TOPICS_Attribute='NO')
                                         ORDER BY NEWID"""):
             yield doc[0]
-    
+
     def __iter__(self):
-        '''
+        """
         Iterates over all documents from split and yields just the text of a 
         document.
         
         Just chains training and test sets
-        '''
+        """
         for doc in chain(self.get_test_set(), self.get_training_set()):
             yield doc
-        
-        
+
+
 class ModApteSplitCorpus(ModLewisSplitCorpus):
-    '''
+    """
     Gets the Modified Apte ("ModApte") Split from Reuters-21578 dataset.
     
     Training Set (9,603 docs): LEWISSPLIT="TRAIN";  TOPICS="YES"
@@ -122,32 +123,33 @@ class ModApteSplitCorpus(ModLewisSplitCorpus):
                      or TOPICS="BYPASS"
                      
     See VIII.B. The Modified Apte ("ModApte") Split in README of dataset
-    '''
-        
+    """
+
     def get_training_set(self):
-        '''
+        """
         Generator over training set
-        '''
+        """
         for doc in self.db.get_conn().execute("""SELECT body 
                                         FROM documents 
                                         WHERE (LEWISSPLIT='TRAIN' AND 
                                               TOPICS_Attribute='YES')
                                         ORDER BY NEWID"""):
             yield doc[0]
-            
+
     def get_test_set(self):
-        '''
+        """
         Generator over test set
-        '''
+        """
         for doc in self.db.get_conn().execute("""SELECT body 
                                         FROM documents 
                                         WHERE (LEWISSPLIT='TEST' AND 
                                               TOPICS_Attribute='YES')
                                         ORDER BY NEWID"""):
             yield doc[0]
-            
+
+
 class R10Split(ModApteSplitCorpus):
-    '''
+    """
     Generates the R10 split as described in [1]: 
     "the set of the 10 categories with the highest number of positive training
      examples"
@@ -155,13 +157,13 @@ class R10Split(ModApteSplitCorpus):
     [1] Debole, Franca, and Fabrizio Sebastiani. 
     "An analysis of the relative hardness of Reuters‐21578 subsets." 
     Journal of the American Society for Information Science and Technology 56.6 (2005): 584-596.
-    '''
-    
+    """
+
     class CategoryMembers(object):
-        '''
+        """
         The class helps to iterate over documents belonging to one category
-        '''
-        
+        """
+
         def __init__(self, name, query, db):
             '''
             TODO: make query a function
@@ -169,18 +171,18 @@ class R10Split(ModApteSplitCorpus):
             self.name = name
             self.query = query
             self.db = db
-            
+
         def __iter__(self):
             for doc in self.db.get_conn().execute(self.query):
                 yield doc[0]
-                
+
         def get_name(self):
             return self.name
-   
+
     def get_training_category_set(self):
-        '''
+        """
         Generator over training set
-        '''
+        """
         for topic in self.db.get_conn().execute("""SELECT topics.id, topics.content, COUNT(*)
                                         FROM documents  
                                         JOIN document_to_topic ON document_to_topic.document_id = documents.id
@@ -189,9 +191,9 @@ class R10Split(ModApteSplitCorpus):
                                         GROUP BY topics.id
                                         ORDER BY COUNT(*) DESC
                                         LIMIT 10"""):
-            yield R10Split.CategoryMembers(name = topic[1],
-                                           db = self.db,
-                                           query = """
+            yield R10Split.CategoryMembers(name=topic[1],
+                                           db=self.db,
+                                           query="""
                                                    SELECT documents.title
                                                     FROM documents  
                                                     JOIN document_to_topic ON document_to_topic.document_id = documents.id
@@ -199,13 +201,13 @@ class R10Split(ModApteSplitCorpus):
                                                            TOPICS_Attribute='YES' AND 
                                                            document_to_topic.topic_id= %d)
                                                    """ % topic[0])
-            
+
     def get_test_category_set(self):
-        '''
+        """
         Generator over test set
         
         TODO: Query is not right yet
-        '''
+        """
         for topic in self.db.get_conn().execute("""SELECT topics.id, COUNT(*), topics.content
                                         FROM documents  
                                         JOIN document_to_topic ON document_to_topic.document_id = documents.id
@@ -214,9 +216,9 @@ class R10Split(ModApteSplitCorpus):
                                         GROUP BY topics.id
                                         ORDER BY COUNT(*) DESC
                                         LIMIT 10"""):
-            yield R10Split.CategoryMembers(name = topic[1],
-                                           db = self.db,
-                                           query = """
+            yield R10Split.CategoryMembers(name=topic[1],
+                                           db=self.db,
+                                           query="""
                                                    SELECT documents.title
                                                     FROM documents  
                                                     JOIN document_to_topic ON document_to_topic.document_id = documents.id
@@ -224,9 +226,10 @@ class R10Split(ModApteSplitCorpus):
                                                            TOPICS_Attribute='YES' AND 
                                                            document_to_topic.topic_id= %d)
                                                    """ % topic[0])
-            
+
+
 class R8Split(R10Split):
-    '''
+    """
     Suitable for single-label classification
     Generates the R8 [1] split: "documents with a single topic and the classes 
     which still have at least one train and one test example"
@@ -242,8 +245,8 @@ class R8Split(R10Split):
     money-fx  
     ship
     trade
-    '''
-    
+    """
+
     target_map = {'acq': 1,
                   'crude': 2,
                   'earn': 3,
@@ -251,20 +254,20 @@ class R8Split(R10Split):
                   'interest': 5,
                   'money-fx': 6,
                   'ship': 7,
-                  'trade': 8}   
-    
+                  'trade': 8}
+
     def get_training_category_set(self):
-        '''
+        """
         Generator over training set
         
         First get all topics with at least on training and one test sample
         Then yield sample set for each topic where each sample belongs only 
         to one sample. The sets are disjunct.
-        '''
+        """
         for class_name in self.target_map.keys():
-            yield R10Split.CategoryMembers(name = class_name,
-                                           db = self.db,
-                                           query = """
+            yield R10Split.CategoryMembers(name=class_name,
+                                           db=self.db,
+                                           query="""
                                                     SELECT documents.body, documents.title, topics.id, topics.content
                                                         FROM documents  
                                                         JOIN document_to_topic ON document_to_topic.document_id = documents.id
@@ -273,15 +276,15 @@ class R8Split(R10Split):
                                                         GROUP BY documents.id
                                                         HAVING COUNT(documents.id) = 1
                                                    """ % class_name) #unsafe so far
-            
+
     def get_test_category_set(self):
-        '''
+        """
         Generator over test set
-        '''
+        """
         for class_name in self.target_map.keys():
-            yield R10Split.CategoryMembers(name = class_name,
-                                           db = self.db,
-                                           query = """
+            yield R10Split.CategoryMembers(name=class_name,
+                                           db=self.db,
+                                           query="""
                                                     SELECT documents.body, documents.title, topics.id, topics.content
                                                         FROM documents  
                                                         JOIN document_to_topic ON document_to_topic.document_id = documents.id
@@ -290,47 +293,47 @@ class R8Split(R10Split):
                                                         GROUP BY documents.id
                                                         HAVING COUNT(documents.id) = 1
                                                    """ % class_name) #unsafe so far
-    
+
     def get_target_label(self, target_number):
         for key, value in self.target_map:
             if key == target_number:
                 return value
-            
+
     def get_target_labels(self):
         return self.target_map.keys()
-            
+
     def get_target_number(self, target_name):
         return self.target_map[target_name]
-    
+
     @property
-    def training_data(self):      
-        '''
+    def training_data(self):
+        """
         Generator over training set
-        '''
+        """
         for c in self.get_training_category_set():
             for doc in c:
                 yield doc
-                
+
     @property
     def training_target(self):
         for c in self.get_training_category_set():
             for _ in c:
-                yield self.target_map[c.name]   
-            
+                yield self.target_map[c.name]
+
     @property
     def test_data(self):
-        '''
+        """
         Generator over test set
-        '''
+        """
         for c in self.get_test_category_set():
             for doc in c:
                 yield doc
-                
+
     @property
     def test_target(self):
-        '''
+        """
         Returns number for topics
-        '''
+        """
         for c in self.get_test_category_set():
             for _ in c:
                 yield self.target_map[c.name] 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,15 +20,22 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
-'''
+"""
 Created on 12.12.2012
 
 @author: karsten jeschkies <jeskar@web.de>
 
 Converts R8 split of Reuters-21578 corpus and saves it to numpy array
-'''
+"""
+
+import logging
+import sys
+
+from gensim import matutils
+import numpy as np
+
 from corpus import R8Split
 from database import FileDatabase
 from feature_extractor.extractors import (LdaFeatureExtractor,
@@ -36,16 +43,15 @@ from feature_extractor.extractors import (LdaFeatureExtractor,
                                           TfidfFeatureExtractor,
                                           cEsaFeatureExtractor)
 from feature_extractor.esa.cosine_esamodel import CosineEsaModel
-from gensim import utils, corpora, models, matutils
-import logging
-import numpy as np
-import sys
+
 
 logger = logging.getLogger("py21578")
+
 
 def get_features(feature_extractor, doc):
     data = feature_extractor.get_features(doc)
     return  matutils.sparse2full(data, feature_extractor.get_feature_number()) 
+
 
 def train_data(feature_extractor, samples):
     logger.info("Convert training documents to feature space...")
@@ -54,6 +60,7 @@ def train_data(feature_extractor, samples):
                                   in samples.training_data))
     
     return training_data
+
 
 def test_data(feature_extractor, samples):
     logger.info("Convert test documents to feature space and predict...")

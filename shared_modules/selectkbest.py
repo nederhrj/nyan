@@ -9,17 +9,13 @@
 #
 # Modified by K. Jeschkies to work on iterables and have constant memory usage
 
-from abc import ABCMeta, abstractmethod
-
 from collections import defaultdict
 import logging
 import numpy as np
 from scipy import stats
 
 from sklearn.feature_selection import SelectKBest
-from sklearn.utils import array2d, atleast2d_or_csr, deprecated, \
-        check_arrays, safe_asarray, safe_sqr, safe_mask
-from sklearn.utils.extmath import safe_sparse_dot
+from sklearn.utils import safe_sqr
 
 logger = logging.getLogger('gensim.models.esamodel')
 
@@ -48,28 +44,28 @@ def if_classif(X_y, n_features):
     pval : array, shape = [n_features,]
         The set of p-values
     """
-    
+
     n_samples = 0
     n_samples_per_class = defaultdict(lambda: 0)
-    
-    sums_args_d = defaultdict(lambda: np.zeros(shape=(n_features))) 
+
+    sums_args_d = defaultdict(lambda: np.zeros(shape=(n_features)))
     ss_alldata = np.zeros(shape=(n_features))
-    
+
     for X, y in X_y:
-        if(n_samples % 100) == 0:
+        if (n_samples % 100) == 0:
             logger.info("Processing doc #%d..." % n_samples)
-            
+
         n_samples += 1
         n_samples_per_class[y] += 1
-        
-        ss_alldata[:] += X[:]**2
+
+        ss_alldata[:] += X[:] ** 2
         sums_args_d[y][:] += X[:]
-        
+
     n_classes = len(sums_args_d.keys())
-    
+
     #Convert dictionary to numpy array
     sums_args = np.array(list(row for row in sums_args_d.itervalues()))
-    
+
     square_of_sums_alldata = safe_sqr(reduce(lambda x, y: x + y, sums_args))
     square_of_sums_args = [safe_sqr(s) for s in sums_args]
     sstot = ss_alldata - square_of_sums_alldata / float(n_samples)
@@ -114,7 +110,7 @@ class iSelectKBest(SelectKBest):
     way.
 
     """
-        
+
     def fit(self, X_y, n_features):
         """
         Evaluate the function

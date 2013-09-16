@@ -22,13 +22,10 @@ from collections import defaultdict
 from itertools import izip
 
 import numpy as np
-from scipy.sparse import issparse
 
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.preprocessing import binarize, LabelBinarizer
-from sklearn.utils import array2d, atleast2d_or_csr
-from sklearn.utils.extmath import safe_sparse_dot, logsumexp
-from sklearn.utils import check_arrays
+from sklearn.utils import array2d
+from sklearn.utils.extmath import logsumexp
 
 __all__ = ['BernoulliNB', 'GaussianNB', 'MultinomialNB']
 
@@ -170,7 +167,6 @@ class GaussianNB(BaseNB):
             first_sample = one
             break
         n_features = first_sample.shape[0]
-
 
         self.theta_ = np.zeros((n_classes, n_features))
         self.sigma_ = np.zeros((n_classes, n_features))
