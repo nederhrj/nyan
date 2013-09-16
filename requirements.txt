@@ -1,0 +1,9 @@
+yaml
+gensim
+numpy
+scipy
+stomp,py
+scikit-learn
+flask
+flask-login
+mongoengine
