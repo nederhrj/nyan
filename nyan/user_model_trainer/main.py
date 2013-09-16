@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 @author: Karsten Jeschkies <jeskar@web.de>
 
 The MIT License (MIT)
@@ -23,15 +23,17 @@ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTIO
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-'''
-from feature_extractor.extractors import EsaFeatureExtractor
+"""
 import logging
-from models.mongodb_models import User
-from mongoengine import *
 import sys
-from user_models import UserModelCentroid
-from utils.helper import load_config
-import yaml
+
+from mongoengine import *
+
+from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor
+from nyan.shared_modules.models.mongodb_models import User
+from nyan.shared_modules.user_models import UserModelCentroid
+from nyan.shared_modules.utils.helper import load_config
+
 
 """
 Learns a new user model when called.
@@ -39,43 +41,44 @@ Learns a new user model when called.
 
 if __name__ == '__main__':
     from optparse import OptionParser
-    
+
     p = OptionParser()
     p.add_option('-c', '--config', action="store", dest='config',
                  help="specify config file")
     p.add_option('-l', '--log', action="store", dest='log',
                  help="specify log file")
-    
+
     (options, args) = p.parse_args()
 
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', 
-                            level=logging.DEBUG,
-                            filename=options.log)
-    
+
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
+                        level=logging.DEBUG,
+                        filename=options.log)
+
     #load config
     logger = logging.getLogger("main")
     logging.info("Load config")
-    
-    config_ = load_config(options.config, logger, exit_with_error = True)
-        
-    if config_ == None:
+
+    config_ = load_config(options.config, logger, exit_with_error=True)
+
+    if config_ is None:
         logger.error("No config. Exit.")
         sys.exit(1)
-        
+
     #Connect to mongo database
-    connect(config_['database']['db-name'], 
-            username= config_['database']['user'], 
-            password= config_['database']['passwd'], 
-            port = config_['database']['port'])
-    
-    feature_extractor = EsaFeatureExtractor(prefix = config_['prefix'])
-    
+    connect(config_['database']['db-name'],
+            username=config_['database']['user'],
+            password=config_['database']['passwd'],
+            port=config_['database']['port'])
+
+    feature_extractor = EsaFeatureExtractor(prefix=config_['prefix'])
+
     logger.info("Learn user model...")
     users = User.objects()
     for u in users:
         logger.info("for %s" % u.name)
-        trainer = UserModelCentroid(user_id = u.id,
-                                    extractor = feature_extractor)
+        trainer = UserModelCentroid(user_id=u.id,
+                                    extractor=feature_extractor)
         trainer.train()
         trainer.save()
     logger.info("...done.")

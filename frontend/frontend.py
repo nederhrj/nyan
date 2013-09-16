@@ -18,7 +18,7 @@ import hashlib
 from jinja2 import Environment, FileSystemLoader
 import jinja2_filters
 import logging
-from models.mongodb_models import (Vendor, User, Article, Feedback, UserModel, ReadArticleFeedback)
+from nyan.shared_modules.models.mongodb_models import (Vendor, User, Article, Feedback, UserModel, ReadArticleFeedback)
 from mongoengine import *
 from nltk.tokenize import sent_tokenize
 import os.path
