@@ -7,3 +7,4 @@ scikit-learn
 flask
 flask-login
 mongoengine
+nltk

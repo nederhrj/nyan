@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Created on 13.06.2012
 
 @author: karsten
-'''
+"""
+
 from appuser import AppUser
 from datetime import datetime, timedelta
 from flask import (Flask, abort, redirect, url_for, render_template, request,
                    flash, session)
 from flask.ext.login import (LoginManager, current_user, login_required,
-                            login_user, logout_user, UserMixin, AnonymousUser,
+                            login_user, logout_user, UserMixin, AnonymousUserMixin,
                             confirm_login, fresh_login_required)
 
 from gensim.corpora import Dictionary
@@ -17,8 +18,7 @@ import hashlib
 from jinja2 import Environment, FileSystemLoader
 import jinja2_filters
 import logging
-from models.mongodb_models import (Vendor, User, Article, Feedback, 
-                                   ReadArticleFeedback)
+from models.mongodb_models import (Vendor, User, Article, Feedback, UserModel, ReadArticleFeedback)
 from mongoengine import *
 from nltk.tokenize import sent_tokenize
 import os.path
@@ -33,7 +33,7 @@ logging.basicConfig(format='-' * 80 + '\n' +
                            '%(message)s\n' +
                            '-' * 80, 
                     level=logging.DEBUG,
-                    filename= "log.txt")
+                    filename="log.txt")
 
 #Flask app
 app = Flask(__name__)
@@ -49,9 +49,7 @@ try:
     SECRET_KEY = config['flask']['secret_key']
     DEBUG = config['flask']['debug']
 except KeyError as e:
-    app.logger.error("Malformed config." +
-                     "Could not get flask secret key and debug option: %s"
-                     % (e))
+    app.logger.error("Malformed config." + "Could not get flask secret key and debug option: %s" % (e))
     sys.exit(1)
 
 app.config.from_object(__name__)
@@ -65,28 +63,29 @@ login_manager.login_message = u"Please log in to access this page."
 
 @login_manager.user_loader
 def load_user(user_id):
-    '''
+    """
     Loads user from Database
-    '''
+    """
     try:
         user = User.objects(id = user_id).first()
     except Exception as inst:
         app.logger.error("Could not login user %s: %s" % (type(inst), type))
         return None
             
-    if user == None:
+    if user is None:
         app.logger.error("No user found for %s" % user_id)
         return None
     
     return AppUser(user)
                 
-login_manager.setup_app(app)
+login_manager.init_app(app)
 
 #Connect to mongo database
 connect(config['database']['db-name'], 
-        username= config['database']['user'], 
-        password= config['database']['passwd'], 
-        port = config['database']['port'])
+        username=config['database']['user'],
+        password=config['database']['passwd'],
+        port=config['database']['port'])
+
 
 #jinja2 filter to test if vendor is in given subscription
 def is_subscribed(vendor):
@@ -117,27 +116,21 @@ app.jinja_env.filters['range'] = lambda l, start, stop: l[start:stop]
 #register jinja2 filters
 app.jinja_env.tests['today'] = jinja2_filters.is_today
 
-app.jinja_env.filters['is_subscriped'] = is_subscribed
+app.jinja_env.filters['is_subscribed'] = is_subscribed
 
 #Dictionary
 app.logger.debug("Load dictionary.")
 try:
     dictionary_ = Dictionary.load(config["dictionary"])
 except IOError as ioe:
-    app.logger.error("Could not load dictionary %s: "
-                     "%s" % (config["dictionary"], ioe))
+    app.logger.error("Could not load dictionary %s: %s" % (config["dictionary"], ioe))
     dictionary_ = None
 except KeyError as e:
-    app.logger.error("Malformed config. Could not get path to dictionary: %s"
-                     % (e))
+    app.logger.error("Malformed config. Could not get path to dictionary: %s" % (e))
     dictionary_ = None
 except Exception as inst:
-    app.logger.error("Could not load dictionary %s. "
-                     "Unknown error %s: %s" %
-                     (config["dictionary"], type(inst), inst))
+    app.logger.error("Could not load dictionary %s. Unknown error %s: %s" % (config["dictionary"], type(inst), inst))
     dictionary_ = None
-
-
     
 @app.route('/')
 def index():
@@ -151,21 +144,20 @@ def login():
     if request.method == 'POST':
         e_mail = request.form['e_mail'].lower()
         password = request.form['password']
-        if e_mail != None and password!=None:
+        if e_mail is not None and password is not None:
             #get user from database
             try:
                 start = time.time()
-                users = User.objects(email = e_mail)
+                users = User.objects(email=e_mail)
                 user = users.first()
                 end = time.time()
                 
                 app.logger.info("Getting user took %f.5 seconds." % (end-start))
             except Exception as inst:
-                app.logger.error("Could not login user %s: %s" %
-                               (type(inst), type))
+                app.logger.error("Could not login user %s: %s" % (type(inst), type))
                 raise abort(500)
             
-            if user == None:
+            if user is None:
                 app.logger.error("No user found for %s" % e_mail)
                 flash('Username or password are not correct.', 'error')
             else:
@@ -193,14 +185,14 @@ def logout():
 @app.route('/all/<date>')
 @login_required
 def all(date=None):        
-    if date == None:
+    if date is None:
         date_ = datetime.now()
     else:
         date_ = datetime.fromtimestamp(time.mktime(time.strptime(date, u'%d-%m-%Y')))
         
     #check if user has any subscriptions
     if len(current_user.get_subscriptions()) == 0:
-        return render_template('no_subscriptions.html',date=date_,
+        return render_template('no_subscriptions.html', date=date_,
                                tab="all", user=current_user.get_user_data)
 
     #get articles
@@ -208,38 +200,33 @@ def all(date=None):
     read_articles_ = current_user.get_read_articles(date=date_)
     
     if len(articles_) == 0:
-        return render_template('no_news.html',date=date_,
+        return render_template('no_news.html', date=date_,
                                tab="all", user=current_user.get_user_data)
 
     #render template
     return render_template('overview.html',
                            date=date_, tab="all", 
-                           articles= articles_,
-                           read_articles = read_articles_)
+                           articles=articles_,
+                           read_articles=read_articles_)
 
 
 @app.route('/read/<key>')
 @login_required
 def read(key):
     try:
-        article_ = Article.objects(id = key).first()
+        article_ = Article.objects(id=key).first()
     except ValidationError as ve:
         app.logger.error("Error on reading %s (%s): %s" % (key, type(ve), ve))
         article_ = None
         
-    if article_ == None:
-        return render_template('no_article.html', 
-                               date=datetime.now())           
+    if article_ is None:
+        return render_template('no_article.html', date=datetime.now())
             
     #save user feedback
-    current_user.save_read_article_feedback(article = article_,
-                                            score = 1.0)
+    current_user.save_read_article_feedback(article=article_, score=1.0)
             
     #render read article view
-    return render_template('read.html', 
-                           article= article_,
-                           date=datetime.now())
-      
+    return render_template('read.html', article=article_, date=datetime.now())
 
 
 @app.route('/top/')
@@ -247,60 +234,51 @@ def read(key):
 @login_required
 def top(date=None):
       
-    if date == None:
+    if date is None:
         date_ = datetime.now()
     else:
         date_ = datetime.fromtimestamp(time.mktime(time.strptime(date, u'%d-%m-%Y')))
             
     #check if user has any subscriptions
     if len(current_user.mongodb_user.subscriptions) == 0:
-        return render_template('no_subscriptions.html', 
-                               date=date_,
-                               tab="all", user=current_user.mongodb_user)
+        return render_template('no_subscriptions.html', date=date_, tab="all", user=current_user.mongodb_user)
 
     #get articles
-    articles_ = current_user.get_top_articles(date = date_, 
-                                              min_rating = config['rating']) 
+    articles_ = current_user.get_top_articles(date=date_, min_rating=config['rating'])
     
     if len(articles_) == 0:
-        return render_template('no_news.html',date=date_,
-                               tab="top", user=current_user.mongodb_user)
+        return render_template('no_news.html',date=date_, tab="top", user=current_user.mongodb_user)
         
     #render template
-    return render_template('top_overview.html',
-                           date=date_, tab="top",
-                           articles= articles_)
+    return render_template('top_overview.html', date=date_, tab="top", articles=articles_)
     
 @app.route('/register')
 @login_required
 def register():
-    '''
+    """
     Registers a new user to service.
-    ''' 
+    """
     #only Karsten is allowed to add a new user
     if current_user.get_email() != "jeskar@web.de":
         return redirect(url_for('index'))
         
-    return render_template('add_user.html',
-                           tab="", date = datetime.now())        
+    return render_template('add_user.html', tab="", date=datetime.now())
         
 @app.route('/subscriptions')
 @login_required
 def subscriptions():
-    return render_template('subscriptions.html', 
-                           tab="subscriptions", date = datetime.now(),
-                           vendors = Vendor.objects())
+    return render_template('subscriptions.html', tab="subscriptions", date=datetime.now(), vendors=Vendor.objects())
     
 @app.route('/profile')  
 @login_required 
 def profile():        
     return render_template('profile.html',
                            tab="profile", 
-                           date = datetime.now(),
-                           user_model = current_user.get_trained_profile(),
-                           dictionary = dictionary_)         
+                           date=datetime.now(),
+                           user_model=current_user.get_trained_profile(),
+                           dictionary=dictionary_)
     
-@app.route('/ajax_change_password', methods = ['POST']) 
+@app.route('/ajax_change_password', methods=['POST'])
 def ajax_change_password():
     if not current_user.is_authenticated():
         abort(403)
@@ -330,7 +308,7 @@ def ajax_change_password():
     m.update(SALT.encode("UTF-8"))
              
     try:
-        current_user.set_password(new_password = m.hexdigest())
+        current_user.set_password(new_password=m.hexdigest())
     except OperationError as e:
         app.logger.error("Could not save password to database")
         abort(500)          
@@ -342,9 +320,9 @@ def ajax_change_password():
     
 @app.route('/ajax_subscripe', methods = ['POST'])
 def ajax_subscripe():
-    '''
-    Called remotely to subscripe current user to a vendor
-    '''
+    """
+    Called remotely to subscribe current user to a vendor
+    """
     if not current_user.is_authenticated():
         abort(403)     
         
@@ -359,11 +337,11 @@ def ajax_subscripe():
         
     return ""
             
-@app.route('/ajax_unsubscripe', methods = ['POST'])
-def ajax_unsubscripe():
-    '''
-    Called remotely to unsupscribe current user from vendor 
-    '''
+@app.route('/ajax_unsubscribe', methods=['POST'])
+def ajax_unsubscribe():
+    """
+    Called remotely to unsubscribe current user from vendor
+    """
     if not current_user.is_authenticated():
         abort(403)
         
@@ -379,11 +357,11 @@ def ajax_unsubscripe():
         
     return ""
         
-@app.route('/ajax_add_user', methods = ['POST'])
+@app.route('/ajax_add_user', methods=['POST'])
 def ajax_add_user():
-    '''
+    """
     Called remotely to add a new user.
-    '''
+    """
     if not current_user.is_authenticated():
         abort(403)
 
@@ -408,7 +386,7 @@ def ajax_add_user():
     m.update(SALT.encode("UTF-8"))
         
     #check if user with email address already exists
-    users_with_same_email = User.objects(email = email)
+    users_with_same_email = User.objects(email=email)
     if len(users_with_same_email) > 0:
         abort(400)
         
@@ -417,16 +395,12 @@ def ajax_add_user():
             
         #just pick the first article as feedback
         first_article = Article.objects().first()
-        first_profile = LearnedProfile(features = first_article.features)
+        first_profile = UserModel(features=first_article.features)
             
-        new_user = User(name = name, password = m.hexdigest(),
-                        email = email,
-                        learned_profile = [first_profile])
+        new_user = User(name=name, password=m.hexdigest(), email=email, learned_profile=[first_profile])
         new_user.save(safe=True)
         
-        first_feedback = ReadArticleFeedback(user_id = new_user.id,
-                                            article = first_article, 
-                                            score = 1.0)
+        first_feedback = ReadArticleFeedback(user_id=new_user.id, article=first_article, score=1.0)
         first_feedback.save()
             
         app.logger.debug("...done.")
