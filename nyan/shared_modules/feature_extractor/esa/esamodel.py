@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,7 +20,7 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
 """
 @author: karsten jeschkies <jeskar@web.de>
@@ -34,52 +34,53 @@ to reduce the number of concepts. If the number of clusters is the same as the
 number of concepts the implementation is true to the paper.
 """
 
-from collections import defaultdict
 import logging
-import itertools
-from nyan.shared_modules.kmedoids import KMedoids
-import math
-import numpy
 
-from gensim import interfaces, matutils, utils, similarities
+import numpy
+from gensim import interfaces, matutils, utils
+
+from nyan.shared_modules.kmedoids import KMedoids
 
 
 logger = logging.getLogger('gensim.models.esamodel')
 
+
 class DocumentTitles(object):
-    '''
+    """
     Loads a list of document titles form a text file.
     Each line is considered to be a title.
-    '''
-    
+    """
+
     def __init__(self):
         self.document_titles = []
-    
+
     @classmethod
     def load(cls, file_path):
         logger.info("Loading concept titles from %s" % file_path)
-        
+
         result = DocumentTitles()
         with open(file_path, "r") as file:
             for line in file:
                 doc_title = line.strip("\n").decode("UTF-8")
                 result.document_titles.append(doc_title)
-        
+
         logger.info("Loaded %d concept titles." % len(result.document_titles))
-               
+
         return result
-    
+
     def append(self, value):
         self.document_titles.append(value)
-    
+
     def __iter__(self):
-        for title in self.document_titles: yield title
-        
+        for title in self.document_titles:
+            yield title
+
     def __getitem__(self, key):
         return self.document_titles[key]
-    
+
     def __len__(self):
         return len(self.document_titles)
+
 
 class EsaModel(interfaces.TransformationABC):
     """
@@ -104,8 +105,9 @@ class EsaModel(interfaces.TransformationABC):
     
     Model persistency is achieved via its load/save methods.
     """
-    def __init__(self, corpus, document_titles, num_clusters = None,
-                 num_features = None):
+
+    def __init__(self, corpus, document_titles, num_clusters=None,
+                 num_features=None):
         """
         Computes the interpreter matrix by calculating the TF-IDF value of each
         token in each concept (doc) in corpus.
@@ -115,54 +117,54 @@ class EsaModel(interfaces.TransformationABC):
         
         If num_clusters == None all documents are used as concepts.
         """
-        
+
         if not num_clusters:
             self.num_clusters = len(document_titles)
         else:
             self.num_clusters = num_clusters
-        
+
         if num_features is None:
             logger.info("scanning corpus to determine the number of features")
             num_features = 1 + utils.get_max_id(corpus)
-            
+
         self.num_features = num_features
-        
+
         #reduce column count by k-medoid clustering and using medoid of each cluster
         #TODO: skip clustering when num_clusters == None
-        clusterer = KMedoids(corpus = corpus, 
-                             num_features = self.num_features,
-                             num_clusters = self.num_clusters,
-                             max_iterations = 10)
+        clusterer = KMedoids(corpus=corpus,
+                             num_features=self.num_features,
+                             num_clusters=self.num_clusters,
+                             max_iterations=10)
         clusters = clusterer.cluster()
-        
+
         #set the corpus to medoids
         #the corpus is our interpreter matrix. It is not sparse
         #each column is a doc and is seen as a concept
         self.corpus = clusterer.get_medoids().T
-        
-        
+
+
         #reduce document titles
         self.document_titles = DocumentTitles()
         for cluster_id in clusters.iterkeys():
             self.document_titles.append(document_titles[cluster_id] or "no title")
-            
+
         #print clusters with their members
         for cluster_id, members in clusters.iteritems():
             cluster_title = document_titles[cluster_id]
-            member_titles = ", ".join(document_titles[member_id] 
-                                      for member_id 
+            member_titles = ", ".join(document_titles[member_id]
+                                      for member_id
                                       in members)
             logger.debug("%s: %s" % (cluster_title, member_titles))
-            
+
 
     def __str__(self):
         return " \n".join(self.document_titles)
-    
+
     def get_concept_titles(self, doc_vec):
-        '''
+        """
         Converts ids from document vector to concept titles.
-        '''
-        return [(self.document_titles[concept_id], weight) 
+        """
+        return [(self.document_titles[concept_id], weight)
                 for concept_id, weight in doc_vec]
 
     def __getitem__(self, bow, eps=1e-12):
@@ -181,25 +183,25 @@ class EsaModel(interfaces.TransformationABC):
         #simply multiply feature vector of input with corpus matrix
         #to get the weight of the concept
         vector = numpy.dot(matutils.sparse2full(bow, self.num_features),
-                          self.corpus)
+                           self.corpus)
 
 
         #normalize
         vector = matutils.unitvec(vector)
 
         # make sure there are no explicit zeroes in the vector (must be sparse)
-        vector = [(concept_id, weight) 
-                  for concept_id, weight 
-                  in enumerate(vector) 
+        vector = [(concept_id, weight)
+                  for concept_id, weight
+                  in enumerate(vector)
                   if abs(weight) > eps]
         return vector
-    
+
     def save(self, fname):
-        '''
+        """
         See MatrixSimilarity.save()
-        '''
-        logger.info("storing %s object to %s and %s" % (self.__class__.__name__, 
-                                                        fname, 
+        """
+        logger.info("storing %s object to %s and %s" % (self.__class__.__name__,
+                                                        fname,
                                                         fname + '.npy'))
         # first, remove the index from self.__dict__, so it doesn't get pickled
         index = self.corpus
@@ -220,4 +222,4 @@ class EsaModel(interfaces.TransformationABC):
         result = utils.unpickle(fname)
         result.corpus = numpy.load(fname + '.npy', mmap_mode='r') # load back as read-only
         return result
-#endclass EsaModel
+        #endclass EsaModel

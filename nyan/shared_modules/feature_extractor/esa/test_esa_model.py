@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,15 +20,15 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
-'''
+"""
 @author: Karsten Jeschkies <jeskar@web.de>
 
 Unittests for the implementation of the ESA model.
 
 The tests are not complete and were used for debugging.
-'''
+"""
 
 from esamodel import EsaModel, DocumentTitles
 from gensim.corpora import Dictionary, MmCorpus
@@ -39,22 +39,22 @@ import unittest
 logger = logging.getLogger("unittesting")
 
 # set up vars used in testing ("Deerwester" from the web tutorial)
-texts = [['human', 'interface', 'computer'], #human interface
- ['survey', 'user', 'computer', 'system', 'response', 'time'], #computer systems
- ['eps', 'user', 'interface', 'system'], #eps
- ['system', 'human', 'system', 'eps'], #human systems
- ['user', 'response', 'time'], #response time
- ['trees'], #trees
- ['graph', 'trees'], #graph
- ['graph', 'minors', 'trees'], #minor tress
- ['graph', 'minors', 'survey']] #minors survey
+texts = [['human', 'interface', 'computer'],  # human interface
+ ['survey', 'user', 'computer', 'system', 'response', 'time'],  # computer systems
+ ['eps', 'user', 'interface', 'system'],  # eps
+ ['system', 'human', 'system', 'eps'],  # human systems
+ ['user', 'response', 'time'],  # response time
+ ['trees'],  # trees
+ ['graph', 'trees'],  # graph
+ ['graph', 'minors', 'trees'],  # minor trees
+ ['graph', 'minors', 'survey']]  # minors survey
 dictionary = Dictionary(texts)
 corpus = [dictionary.doc2bow(text) for text in texts]
 concepts = ['human interface', 'computer systems', 'eps', 'human systems',
             'response time', 'tress', 'graph', 'minors tress', 'minors survey']
 
-class TestESAModel(unittest.TestCase):
 
+class TestESAModel(unittest.TestCase):
 
     def setUp(self):
         logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', 
@@ -62,7 +62,6 @@ class TestESAModel(unittest.TestCase):
 
     def tearDown(self):
         pass
-
 
     @unittest.skip("Skip small test")
     def test_constructor(self):
@@ -73,9 +72,7 @@ class TestESAModel(unittest.TestCase):
         tfidf_corpus = tfidf_model[corpus]
         
         #train esa model
-        esa_model = EsaModel(tfidf_corpus, num_clusters = 9, 
-                             document_titles = concepts,
-                             num_features = len(dictionary))
+        esa_model = EsaModel(tfidf_corpus, num_clusters=9, document_titles=concepts, num_features=len(dictionary))
         
         print "%s\n" % str(esa_model)
         
@@ -104,9 +101,8 @@ class TestESAModel(unittest.TestCase):
         document_titles = DocumentTitles.load("/media/sdc1/test_dump/result/test_articles.txt")
 
         #train esa model
-        esa_model = EsaModel(tfidf_corpus, num_clusters = 15, 
-                             document_titles = document_titles,
-                             num_features = len(id2token))
+        esa_model = EsaModel(tfidf_corpus, num_clusters=15, document_titles=document_titles,
+                             num_features=len(id2token))
         
         print esa_model
         
@@ -131,9 +127,7 @@ class TestESAModel(unittest.TestCase):
         document_titles = DocumentTitles.load("/media/sdc1/test_dump/result/wiki_articles.txt")
 
         #train esa model
-        esa_model = EsaModel(tfidf_corpus, num_clusters = 15, 
-                             document_titles = document_titles,
-                             num_features = len(id2token))
+        esa_model = EsaModel(tfidf_corpus, num_clusters=15, document_titles=document_titles, num_features=len(id2token))
         
         print esa_model
         
@@ -142,8 +136,6 @@ class TestESAModel(unittest.TestCase):
         tmp_esa = EsaModel.load('/media/sdc1/test_dump/result/wiki_esa.model') 
         print tmp_esa  
         
-        
-
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

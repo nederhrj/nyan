@@ -24,5 +24,7 @@ setup(
         "flask-login >= 0.2.7",
         "mongoengine >= 0.8.4",
         "nltk >= 2.0.4",
+        "pattern >= 2.6",
+        "multiprocessing >= 2.6.2.1",
     ],
 )
