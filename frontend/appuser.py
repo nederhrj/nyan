@@ -6,7 +6,7 @@ Created on 15.10.2012
 
 from datetime import timedelta
 from flask.ext.login import (current_user, UserMixin, AnonymousUserMixin)
-from models.mongodb_models import ( User, Article, RankedArticle, ReadArticleFeedback)
+from nyan.shared_modules.models.mongodb_models import (User, Article, RankedArticle, ReadArticleFeedback)
 
 
 class AppUser(UserMixin):

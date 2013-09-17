@@ -5,7 +5,7 @@
     user: "blacklab"
     passwd: ""
     db-name: ""
-    port: 0
+    port: 27017
   #prefix for tfidf, lda and esa model
   prefix: "wiki"
   #minimum rating for top-news

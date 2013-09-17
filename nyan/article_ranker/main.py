@@ -36,7 +36,7 @@ import yaml
 
 from article_ranker import ArticleRanker
 from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor
-from nyan.article_ranker.daemon import Daemon
+from nyan.shared_modules.utils.daemon import Daemon
 
 
 """
