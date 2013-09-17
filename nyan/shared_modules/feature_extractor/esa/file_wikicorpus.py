@@ -42,11 +42,12 @@ NO_BELOW = 20
 #Number of topics to create for lda model
 NUM_TOPICS = 500
 
+
 class CleanDocument(object):
     """
     Takes a document as a string.
     
-    Tokenzies documents and stems document words.
+    Tokenizes documents and stems document words.
     Does not removes stops because all stop words will be removed later when
     the dictionary is filtered.
     
@@ -56,9 +57,9 @@ class CleanDocument(object):
     """
     
     def __init__(self, document):
-        '''
+        """
         :param document: A string with the content of the document.
-        '''
+        """
         
         #use pattern lemmatizer. see gensim.utils.lemmatizer. 
         #Note: len(words) < 15 are filtered out
@@ -68,12 +69,13 @@ class CleanDocument(object):
         return self.clean_document_
     
     def __iter__(self):
-        '''
+        """
         Iters through words of document.
-        '''
+        """
         
         for word in self.clean_document_:
             yield word
+
 
 def process_file_path(file_path):
     with open(file_path, "r") as file:
@@ -85,25 +87,26 @@ def process_file_path(file_path):
         
         lemmatized_doc = utils.lemmatize(doc)
         
-        return (article_name, lemmatized_doc)
+        return article_name, lemmatized_doc
+
 
 class CleanCorpus(corpora.TextCorpus):
-    '''
+    """
     Loads all documents in a directory from a file system. Each file in a dir 
     is regarded as a document. It should be a texfile.
     
     The first line is the article name.
     
     Stems all words and removes stop words. Tokenizes each document
-    '''
+    """
 
     def __init__(self, fname, no_below=NO_BELOW, keep_words=DEFAULT_DICT_SIZE, 
                  dictionary=None):
-        '''
+        """
         See gensim.corpora.textcorpus for details.
         
         :param fnam: The path to scan for documents.
-        '''
+        """
         
         self.fname = fname
         self.article_names = []
@@ -112,8 +115,8 @@ class CleanCorpus(corpora.TextCorpus):
         if no_below is None:
             no_below = NO_BELOW
               
-        self.file_paths = [os.path.join(self.fname, name) for name in os.listdir(self.fname) 
-                            if os.path.isfile(os.path.join(self.fname, name))]
+        self.file_paths = [os.path.join(self.fname, name) for name in os.listdir(self.fname)
+                           if os.path.isfile(os.path.join(self.fname, name))]
         
         self.processes = 2
         
@@ -128,11 +131,11 @@ class CleanCorpus(corpora.TextCorpus):
             self.dictionary = dictionary
             
     def get_texts(self):
-        '''
+        """
         Files are processed parallel.
         
         See wikicorpus.py by Radim Rehurek
-        '''
+        """
         logger = logging.getLogger("feature_extractor")
         
         logger.info("Scanning %d files." % self.total_articles)
@@ -141,8 +144,7 @@ class CleanCorpus(corpora.TextCorpus):
 
         pool = multiprocessing.Pool(self.processes)
         
-        for group in  utils.chunkize_serial(self.file_paths, 
-                                            chunksize=10*self.processes):
+        for group in utils.chunkize_serial(self.file_paths, chunksize=10*self.processes):
             for article_name, tokens in pool.imap(process_file_path, group):
                 articles_processed += 1
                 try:
@@ -173,11 +175,12 @@ class CleanCorpus(corpora.TextCorpus):
                 article_name = line.strip("\n").decode("UTF-8")
                 self.article_names.append(article_name)
 
-def save(save_func, path):
+
+def save(save_func, file_path):
     try:
-        save_func(path)
+        save_func(file_path)
     except IOError as e:
-        logger.error("Could not save to %s: %s" % (path, e))
+        logger.error("Could not save to %s: %s" % (file_path, e))
         answer = raw_input("Do you want to try with a different path? (yes/no)")
         if answer != "yes":
             raise e
@@ -185,8 +188,7 @@ def save(save_func, path):
             new_path = raw_input("Enter the new path:")
             save(save_func, new_path)
     except Exception as inst:
-        logger.error("Unknown error on saving \"%s\" %s: %s" % 
-                    (file_path, type(inst), inst))
+        logger.error("Unknown error on saving \"%s\" %s: %s" % (file_path, type(inst), inst))
         raise
             
 if __name__ == "__main__":
@@ -194,9 +196,9 @@ if __name__ == "__main__":
         
     p = OptionParser()
     p.add_option('-p', '--path', action="store", dest='doc_path',
-                     help="specify path of wiki documents")
+                 help="specify path of wiki documents")
     p.add_option('-o', '--output-prefix', action="store", dest='prefix',
-                     help="specify path prefix where everything should be saved")
+                 help="specify path prefix where everything should be saved")
     (options, args) = p.parse_args()
     
     logger = logging.getLogger("feature_extractor")
@@ -215,7 +217,7 @@ if __name__ == "__main__":
     
     #del corpus
     
-    '''Bag-of-Words'''
+    """Bag-of-Words"""
     
     #init corpus reader and word -> id map
     #id2token = corpora.Dictionary.load(options.prefix + "_wordids.dict")
@@ -236,7 +238,7 @@ if __name__ == "__main__":
     id2token = corpora.Dictionary.load(options.prefix + "_wordids.dict")
     #mm_bow = corpora.MmCorpus(options.prefix + '_bow_corpus.mm')
     
-    '''TFIDF Model creation'''
+    """TFIDF Model creation"""
     
     #build tfidf model
     #tfidf = models.TfidfModel(mm_bow, id2word=id2token, normalize=True)
@@ -252,7 +254,7 @@ if __name__ == "__main__":
     #init tfidf-corpus reader
     #mm_tfidf = corpora.MmCorpus(options.prefix + '_tfidf_corpus.mm')
     
-    '''LDA Model creation'''
+    """LDA Model creation"""
     
     #build lda model
     #lda = models.LdaModel(corpus=mm_tfidf, id2word=id2token, 
@@ -269,15 +271,13 @@ if __name__ == "__main__":
     #init lda-corpus reader
     mm_lda = corpora.MmCorpus(options.prefix + '_lda_corpus.mm')
     
-    '''ESA Model creation'''
+    """ESA Model creation"""
     
     #document titles
     article_titles = DocumentTitles.load(options.prefix + "_articles.txt")
     
     #build esa model
-    esa = EsaModel(mm_lda, num_clusters = 10000, 
-                           document_titles = article_titles,
-                           num_features = NUM_TOPICS)
+    esa = EsaModel(mm_lda, num_clusters=10000, document_titles=article_titles, num_features=NUM_TOPICS)
     
     esa.save(options.prefix + "_esa_on_lda.model")
     

@@ -75,8 +75,7 @@ class ArticleRanker(object):
                                      date=datetime.now())
             stored_article.save(safe=True)
         except KeyError as e:
-            logger.error("Could not save article. Data is malformed. Key %s is missing in %s."
-                         % (e, article_as_dict))
+            logger.error("Could not save article. Data is malformed. Key %s is missing in %s." % (e, article_as_dict))
             return None
         except Exception as e:
             logger.error("Could not save article due to error %s: %s" % (type(e), e))
@@ -85,9 +84,7 @@ class ArticleRanker(object):
         return stored_article
 
     def save_rating(self, user, article, rating):
-        ranked_article = RankedArticle(user_id=user.id,
-                                       article=article,
-                                       rating=rating)
+        ranked_article = RankedArticle(user_id=user.id, article=article, rating=rating)
         ranked_article.save()
 
         logger.debug("Saved article rating")
@@ -110,9 +107,6 @@ class ArticleRanker(object):
 
         #rank article for each user to her profile
         for u in users:
-            user_model = UserModelCentroid(user_id=u.id,
-                                           extractor=self.feature_extractor_)
-
+            user_model = UserModelCentroid(user_id=u.id, extractor=self.feature_extractor_)
             ranking = user_model.rank(stored_article)
-
-            self.save_rating(u, stored_article, ranking) 
+            self.save_rating(u, stored_article, ranking)
