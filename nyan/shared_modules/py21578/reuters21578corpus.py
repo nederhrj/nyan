@@ -4,21 +4,21 @@
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of 
-this software and associated documentation files (the "Software"), to deal in 
-the Software without restriction, including without limitation the rights to use, 
-copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the 
-Software, and to permit persons to whom the Software is furnished to do so, 
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all 
+The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
-PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
@@ -152,72 +152,72 @@ class FileDatabase(object):
 
         #Create document table
         c.execute('''CREATE TABLE documents
-                     (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                      date TEXT, 
-                      MKNote TEXT, 
-                      unknown TEXT, 
-                      author TEXT, 
-                      dateline TEXT, 
-                      title TEXT, 
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                      date TEXT,
+                      MKNote TEXT,
+                      unknown TEXT,
+                      author TEXT,
+                      dateline TEXT,
+                      title TEXT,
                       body TEXT,
-                      LEWISSPLIT TEXT, 
-                      TOPICS_Attribute TEXT, 
-                      CGISPLIT TEXT, 
-                      OLDID INTEGER, 
+                      LEWISSPLIT TEXT,
+                      TOPICS_Attribute TEXT,
+                      CGISPLIT TEXT,
+                      OLDID INTEGER,
                       NEWID INTEGER)''')
 
         #Create many-to-many document to topic
         c.execute('''CREATE TABLE document_to_topic
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                     document_id INTEGER, 
+                     document_id INTEGER,
                      topic_id INTEGER)''')
 
         #Create topics table
-        c.execute('''CREATE TABLE topics 
+        c.execute('''CREATE TABLE topics
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
                      content TEXT)''')
 
         #Create many-to-many document to exchange
         c.execute('''CREATE TABLE document_to_exchange
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                     document_id INTEGER, 
+                     document_id INTEGER,
                      exchange_id INTEGER)''')
 
         #Create exchanges table
-        c.execute('''CREATE TABLE exchanges 
+        c.execute('''CREATE TABLE exchanges
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
                      content TEXT)''')
 
         #Create many-to-many document to place
         c.execute('''CREATE TABLE document_to_place
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                     document_id INTEGER, 
+                     document_id INTEGER,
                      place_id INTEGER)''')
 
         #Create places table
-        c.execute('''CREATE TABLE places 
+        c.execute('''CREATE TABLE places
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
                      content TEXT)''')
 
         #Create many-to-many document to org
         c.execute('''CREATE TABLE document_to_org
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                     document_id INTEGER, 
+                     document_id INTEGER,
                      org_id INTEGER)''')
 
         #Create orgs table
-        c.execute('''CREATE TABLE orgs 
+        c.execute('''CREATE TABLE orgs
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
                      content TEXT)''')
 
         #Create many-to-many document to person
         c.execute('''CREATE TABLE document_to_person
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                     document_id INTEGER, 
+                     document_id INTEGER,
                      people_id INTEGER)''')
 
         #Create people table
-        c.execute('''CREATE TABLE people 
+        c.execute('''CREATE TABLE people
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
                      content TEXT)''')
 
@@ -228,9 +228,9 @@ class FileDatabase(object):
                                         document_id, category_values):
         """
         Adds many-to-many relation of a document and many category calues.
-        
-        Only legal category values are connected. 
-        
+
+        Only legal category values are connected.
+
         Parameters
         ----------
         relation_table_name : E.g. document_to_topic
@@ -241,9 +241,9 @@ class FileDatabase(object):
         """
         c = self.conn.cursor()
 
-        query = """INSERT INTO %s (document_id, %s)   
-                   SELECT ?,id 
-                   FROM %s 
+        query = """INSERT INTO %s (document_id, %s)
+                   SELECT ?,id
+                   FROM %s
                    WHERE content = ?;""" % (relation_table_name,
                                             column_name,
                                             category_table_name)#unsafe
@@ -271,17 +271,17 @@ class FileDatabase(object):
                       OLDID, NEWID):
         """
         Adds a new document to database
-        
+
         Returns
         -------
         id of row inserted
         """
         c = self.conn.cursor()
 
-        query = '''INSERT INTO documents 
-                        (date, MKNote, unknown, author, dateline, title, 
-                         body, LEWISSPLIT, TOPICS_Attribute, CGISPLIT, 
-                         OLDID, NEWID) 
+        query = '''INSERT INTO documents
+                        (date, MKNote, unknown, author, dateline, title,
+                         body, LEWISSPLIT, TOPICS_Attribute, CGISPLIT,
+                         OLDID, NEWID)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
         c.execute(query, (date, MKNote, unknown, author, dateline, title,
                           body, LEWISSPLIT, TOPICS_Attribute, CGISPLIT,
@@ -297,7 +297,7 @@ class FileDatabase(object):
     def _get_safe_content(self, tag, default=u''):
         """
         Trys to get content from tag. If this fails default is returned
-        
+
         tag should be a BeautifulSoup Node
         """
         try:
@@ -311,7 +311,7 @@ class FileDatabase(object):
     def _get_safe_attribute(self, tag, attribute_name, default=''):
         """
         Trys to get attribute value from tag. If this fails default is returned
-        
+
         tag should be a BeautifulSoup Node
         attribute_name is a string
         """
@@ -326,7 +326,7 @@ class FileDatabase(object):
     def _get_safe_categories(self, tag, category_name):
         """
         Trys to get categories from tag by category_name
-        
+
         Returns
         -------
         list of categories as string
@@ -361,7 +361,7 @@ class FileDatabase(object):
         return soup
 
     def _get_all_reuters(self, path):
-        #Since the format is somewhat screwed 
+        #Since the format is somewhat screwed
         # we look for <REUTERS ...>...</REUTERS> sets and parse them individually
         with open(os.path.join(path), 'r') as file:
             #skip <!DOCTYPE ../>
@@ -440,7 +440,7 @@ class FileDatabase(object):
     def __init__(self, reuters_path, database_path):
         """
         Creates SQLite Database from Reuters-21578 dataset.
-        
+
         Parameters
         ----------
         reuters_path : If not None a new database will be created
@@ -456,25 +456,20 @@ class FileDatabase(object):
         self.conn = sqlite3.connect(database_path)
         self._create_tables()
 
-        #Leagal category lists
-        legal_topics = self._load_legal_set(os.path.join(reuters_path,
-                                                         "all-topics-strings.lc.txt"))
+        #Legal category lists
+        legal_topics = self._load_legal_set(os.path.join(reuters_path, "all-topics-strings.lc.txt"))
         self._add_legal_category_to_table(legal_topics, "topics")
 
-        legal_exchanges = self._load_legal_set(os.path.join(reuters_path,
-                                                            "all-exchanges-strings.lc.txt"))
+        legal_exchanges = self._load_legal_set(os.path.join(reuters_path, "all-exchanges-strings.lc.txt"))
         self._add_legal_category_to_table(legal_exchanges, "exchanges")
 
-        legal_places = self._load_legal_set(os.path.join(reuters_path,
-                                                         "all-places-strings.lc.txt"))
+        legal_places = self._load_legal_set(os.path.join(reuters_path, "all-places-strings.lc.txt"))
         self._add_legal_category_to_table(legal_places, "places")
 
-        legal_orgs = self._load_legal_set(os.path.join(reuters_path,
-                                                       "all-orgs-strings.lc.txt"))
+        legal_orgs = self._load_legal_set(os.path.join(reuters_path, "all-orgs-strings.lc.txt"))
         self._add_legal_category_to_table(legal_orgs, "orgs")
 
-        legal_people = self._load_legal_set(os.path.join(reuters_path,
-                                                         "all-people-strings.lc.txt"))
+        legal_people = self._load_legal_set(os.path.join(reuters_path, "all-people-strings.lc.txt"))
         self._add_legal_category_to_table(legal_people, "people")
 
         #Load and add documents
@@ -485,8 +480,7 @@ class FileDatabase(object):
     @classmethod
     def load(cls, database_path):
         logger.info("Load database from %s" % database_path)
-        return FileDatabase(reuters_path=None,
-                            database_path=database_path)
+        return FileDatabase(reuters_path=None, database_path=database_path)
 
 
 class InMemoryDatabase(FileDatabase):
@@ -495,8 +489,7 @@ class InMemoryDatabase(FileDatabase):
     """
 
     def __init__(self, reuters_path):
-        super(InMemoryDatabase, self).__init__(reuters_path=reuters_path,
-                                               database_path=":memory:")
+        super(InMemoryDatabase, self).__init__(reuters_path=reuters_path, database_path=":memory:")
 
 
     ###############################################################################
@@ -506,30 +499,29 @@ class InMemoryDatabase(FileDatabase):
 class ReutersCorpus(object):
     """
     Complete Reuters corpus.
-    
+
     Is iterable
     """
-
 
     def __init__(self, reuters_folder, database_path=None):
         """
         There are several combinations of reuters_folder and database_path.
-        
+
         1.
-        reuters_folder != None and database_path = None 
+        reuters_folder != None and database_path = None
         An in-memory database is created.
-        
-        2. 
-        reuters_folder != None and database_path = None 
+
+        2.
+        reuters_folder != None and database_path = None
         An SQLite database file is create in database_path and saved.
-        
-        3. 
+
+        3.
         reuters_folder = None and database_path != None
-        Teh database is loaded from SQLite database file database_path.
-        
+        The database is loaded from SQLite database file database_path.
+
         Parameters
         ----------
-        reuters_folder : Path to folder where reut2-***.sgm files, 
+        reuters_folder : Path to folder where reut2-***.sgm files,
                          all-topics-strings.lc.txt, all-exchanges-strings.lc.txt,
                          all-places-strings.lc.txt, all-orgs-strings.lc.txt
                          and all-people-strings.lc.txt reside.
@@ -561,11 +553,11 @@ class ReutersCorpus(object):
 class ModLewisSplitCorpus(ReutersCorpus):
     """
     Get the the Modified Lewis ("ModLewis") Split from Reuters-21578 dataset.
-    
+
     Training Set (13,625 docs): LEWISSPLIT="TRAIN";  TOPICS="YES" or "NO"
     Test Set (6,188 docs):  LEWISSPLIT="TEST"; TOPICS="YES" or "NO"
     Unused (1,765): LEWISSPLIT="NOT-USED" or TOPICS="BYPASS"
-    
+
     See VIII.A. The Modified Lewis ("ModLewis") Split in README of dataset.
     """
 
@@ -573,11 +565,11 @@ class ModLewisSplitCorpus(ReutersCorpus):
         """
         Generator over training set
         """
-        for doc in self.db.get_conn().execute("""SELECT body 
-                                        FROM documents 
-                                        WHERE (LEWISSPLIT='TRAIN' AND 
+        for doc in self.db.get_conn().execute("""SELECT body
+                                        FROM documents
+                                        WHERE (LEWISSPLIT='TRAIN' AND
                                               TOPICS_Attribute='YES') OR
-                                              (LEWISSPLIT='TRAIN' AND 
+                                              (LEWISSPLIT='TRAIN' AND
                                               TOPICS_Attribute='NO')
                                         ORDER BY NEWID"""):
             yield doc[0]
@@ -586,20 +578,20 @@ class ModLewisSplitCorpus(ReutersCorpus):
         """
         Generator over test set
         """
-        for doc in self.db.get_conn().execute("""SELECT body 
-                                        FROM documents 
-                                        WHERE (LEWISSPLIT='TEST' AND 
+        for doc in self.db.get_conn().execute("""SELECT body
+                                        FROM documents
+                                        WHERE (LEWISSPLIT='TEST' AND
                                               TOPICS_Attribute='YES') OR
-                                              (LEWISSPLIT='TEST' AND 
+                                              (LEWISSPLIT='TEST' AND
                                               TOPICS_Attribute='NO')
                                         ORDER BY NEWID"""):
             yield doc[0]
 
     def __iter__(self):
         """
-        Iterates over all documents from split and yields just the text of a 
+        Iterates over all documents from split and yields just the text of a
         document.
-        
+
         Just chains training and test sets
         """
         for doc in chain(self.get_test_set(), self.get_training_set()):
@@ -613,13 +605,13 @@ class ModLewisSplitCorpus(ReutersCorpus):
 class ModApteSplitCorpus(ModLewisSplitCorpus):
     """
     Gets the Modified Apte ("ModApte") Split from Reuters-21578 dataset.
-    
+
     Training Set (9,603 docs): LEWISSPLIT="TRAIN";  TOPICS="YES"
     Test Set (3,299 docs): LEWISSPLIT="TEST"; TOPICS="YES"
     Unused (8,676 docs):   LEWISSPLIT="NOT-USED"; TOPICS="YES"
-                     or TOPICS="NO" 
+                     or TOPICS="NO"
                      or TOPICS="BYPASS"
-                     
+
     See VIII.B. The Modified Apte ("ModApte") Split in README of dataset
     """
 
@@ -627,9 +619,9 @@ class ModApteSplitCorpus(ModLewisSplitCorpus):
         """
         Generator over training set
         """
-        for doc in self.db.get_conn().execute("""SELECT body 
-                                        FROM documents 
-                                        WHERE (LEWISSPLIT='TRAIN' AND 
+        for doc in self.db.get_conn().execute("""SELECT body
+                                        FROM documents
+                                        WHERE (LEWISSPLIT='TRAIN' AND
                                               TOPICS_Attribute='YES')
                                         ORDER BY NEWID"""):
             yield doc[0]
@@ -638,9 +630,9 @@ class ModApteSplitCorpus(ModLewisSplitCorpus):
         """
         Generator over test set
         """
-        for doc in self.db.get_conn().execute("""SELECT body 
-                                        FROM documents 
-                                        WHERE (LEWISSPLIT='TEST' AND 
+        for doc in self.db.get_conn().execute("""SELECT body
+                                        FROM documents
+                                        WHERE (LEWISSPLIT='TEST' AND
                                               TOPICS_Attribute='YES')
                                         ORDER BY NEWID"""):
             yield doc[0]
@@ -648,12 +640,12 @@ class ModApteSplitCorpus(ModLewisSplitCorpus):
 
 class R10Split(ModApteSplitCorpus):
     """
-    Generates the R10 split as described in [1]: 
+    Generates the R10 split as described in [1]:
     "the set of the 10 categories with the highest number of positive training
      examples"
-    
-    [1] Debole, Franca, and Fabrizio Sebastiani. 
-    "An analysis of the relative hardness of Reuters‐21578 subsets." 
+
+    [1] Debole, Franca, and Fabrizio Sebastiani.
+    "An analysis of the relative hardness of Reuters‐21578 subsets."
     Journal of the American Society for Information Science and Technology 56.6 (2005): 584-596.
     """
 
@@ -682,10 +674,10 @@ class R10Split(ModApteSplitCorpus):
         Generator over training set
         """
         for topic in self.db.get_conn().execute("""SELECT topics.id, topics.content, COUNT(*)
-                                        FROM documents  
+                                        FROM documents
                                         JOIN document_to_topic ON document_to_topic.document_id = documents.id
                                         JOIN topics ON document_to_topic.topic_id = topics.id
-                                        WHERE (LEWISSPLIT='TRAIN' AND TOPICS_Attribute='YES') 
+                                        WHERE (LEWISSPLIT='TRAIN' AND TOPICS_Attribute='YES')
                                         GROUP BY topics.id
                                         ORDER BY COUNT(*) DESC
                                         LIMIT 10"""):
@@ -693,24 +685,24 @@ class R10Split(ModApteSplitCorpus):
                                            db=self.db,
                                            query="""
                                                    SELECT documents.title
-                                                    FROM documents  
+                                                    FROM documents
                                                     JOIN document_to_topic ON document_to_topic.document_id = documents.id
-                                                    WHERE (LEWISSPLIT='TRAIN' AND 
-                                                           TOPICS_Attribute='YES' AND 
+                                                    WHERE (LEWISSPLIT='TRAIN' AND
+                                                           TOPICS_Attribute='YES' AND
                                                            document_to_topic.topic_id= %d)
                                                    """ % topic[0])
 
     def get_test_category_set(self):
         """
         Generator over test set
-        
+
         TODO: Query is not right yet
         """
         for topic in self.db.get_conn().execute("""SELECT topics.id, COUNT(*), topics.content
-                                        FROM documents  
+                                        FROM documents
                                         JOIN document_to_topic ON document_to_topic.document_id = documents.id
                                         JOIN topics ON document_to_topic.topic_id = topics.id
-                                        WHERE (LEWISSPLIT='TEST' AND TOPICS_Attribute='YES') 
+                                        WHERE (LEWISSPLIT='TEST' AND TOPICS_Attribute='YES')
                                         GROUP BY topics.id
                                         ORDER BY COUNT(*) DESC
                                         LIMIT 10"""):
@@ -718,10 +710,10 @@ class R10Split(ModApteSplitCorpus):
                                            db=self.db,
                                            query="""
                                                    SELECT documents.title
-                                                    FROM documents  
+                                                    FROM documents
                                                     JOIN document_to_topic ON document_to_topic.document_id = documents.id
-                                                    WHERE (LEWISSPLIT='TEST' AND 
-                                                           TOPICS_Attribute='YES' AND 
+                                                    WHERE (LEWISSPLIT='TEST' AND
+                                                           TOPICS_Attribute='YES' AND
                                                            document_to_topic.topic_id= %d)
                                                    """ % topic[0])
 
@@ -729,18 +721,18 @@ class R10Split(ModApteSplitCorpus):
 class R8Split(R10Split):
     """
     Suitable for single-label classification
-    Generates the R8 [1] split: "documents with a single topic and the classes 
+    Generates the R8 [1] split: "documents with a single topic and the classes
     which still have at least one train and one test example"
-    
+
     [1] See http://web.ist.utl.pt/~acardoso/datasets/
-    
+
     So far the selection if hard coded for topics:
-    acq    
-    crude    
-    earn    
-    grain   
-    interest 
-    money-fx  
+    acq
+    crude
+    earn
+    grain
+    interest
+    money-fx
     ship
     trade
     """
@@ -757,9 +749,9 @@ class R8Split(R10Split):
     def get_training_category_set(self):
         """
         Generator over training set
-        
+
         First get all topics with at least on training and one test sample
-        Then yield sample set for each topic where each sample belongs only 
+        Then yield sample set for each topic where each sample belongs only
         to one sample. The sets are disjunct.
         """
         for class_name in self.target_map.keys():
@@ -767,10 +759,10 @@ class R8Split(R10Split):
                                            db=self.db,
                                            query="""
                                                     SELECT documents.body, documents.title, topics.id, topics.content
-                                                        FROM documents  
+                                                        FROM documents
                                                         JOIN document_to_topic ON document_to_topic.document_id = documents.id
                                                         JOIN topics ON document_to_topic.topic_id = topics.id
-                                                        WHERE (LEWISSPLIT='TRAIN' AND TOPICS_Attribute='YES' AND topics.content = '%s') 
+                                                        WHERE (LEWISSPLIT='TRAIN' AND TOPICS_Attribute='YES' AND topics.content = '%s')
                                                         GROUP BY documents.id
                                                         HAVING COUNT(documents.id) = 1
                                                    """ % class_name)  # unsafe so far
@@ -784,10 +776,10 @@ class R8Split(R10Split):
                                            db=self.db,
                                            query="""
                                                     SELECT documents.body, documents.title, topics.id, topics.content
-                                                        FROM documents  
+                                                        FROM documents
                                                         JOIN document_to_topic ON document_to_topic.document_id = documents.id
                                                         JOIN topics ON document_to_topic.topic_id = topics.id
-                                                        WHERE (LEWISSPLIT='TEST' AND TOPICS_Attribute='YES' AND topics.content = '%s') 
+                                                        WHERE (LEWISSPLIT='TEST' AND TOPICS_Attribute='YES' AND topics.content = '%s')
                                                         GROUP BY documents.id
                                                         HAVING COUNT(documents.id) = 1
                                                    """ % class_name) #unsafe so far

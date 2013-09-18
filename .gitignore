@@ -49,3 +49,10 @@ nosetests.xml
 
 # Logs
 log.txt
+
+# Project related
+*.log
+*.mm
+*.index
+*.model
+*.dict.txt

@@ -35,8 +35,11 @@ import sys
 
 from gensim import utils, corpora, models
 
-from database import FileDatabase
 from corpus import R8Split
+from database import FileDatabase
+
+
+#from database import FileDatabase
 
 
 logger = logging.getLogger("py21578")
@@ -141,6 +144,8 @@ if __name__ == '__main__':
 
     #Init clean corpus
     corpus = CleanCorpus(db=db)
+    #dictionary = corpus.Dictionary(corpus.get_texts())
+    #dictionary.filter_extremes(no_below=20, no_above=0.1, keep_n=50000)
 
     #save dictionary: word <-> token id map
     corpus.dictionary.save(options.prefix + "_wordids.dict")
@@ -151,12 +156,11 @@ if __name__ == '__main__':
     """Bag-of-Words"""
 
     #init corpus reader and word -> id map
-    #id2token = corpora.Dictionary.load(options.prefix + "_wordids.dict")
-    #new_corpus = CleanCorpus(db = db, dictionary = id2token)
+    id2token = corpora.Dictionary.load(options.prefix + "_wordids.dict")
+    new_corpus = CleanCorpus(db=db, dictionary=id2token)
 
     #create and save bow-representation of corpus
-    #corpora.MmCorpus.serialize(options.prefix + '_bow_corpus.mm', new_corpus,
-    #                           progress_cnt=1000)
+    corpora.MmCorpus.serialize(options.prefix + '_bow_corpus.mm', new_corpus, progress_cnt=1000)
 
     #del new_corpus
 
@@ -173,10 +177,7 @@ if __name__ == '__main__':
     tfidf.save(options.prefix + '_tfidf.model')
 
     #save corpus as tfidf vectors in matrix market format
-    corpora.MmCorpus.serialize(options.prefix + '_tfidf_corpus.mm',
-                               tfidf[mm_bow],
-                               progress_cnt=1000)
-
+    corpora.MmCorpus.serialize(options.prefix + '_tfidf_corpus.mm', tfidf[mm_bow], progress_cnt=1000)
 
     #init tfidf-corpus reader
     mm_tfidf = corpora.MmCorpus(options.prefix + '_tfidf_corpus.mm')
@@ -184,9 +185,8 @@ if __name__ == '__main__':
     """LDA Model creation"""
 
     #build lda model
-    lda = models.LdaModel(corpus=mm_tfidf, id2word=id2token,
-                          num_topics=NUM_TOPICS, update_every=1,
-                          chunksize=1000, passes=4)
+    lda = models.LdaModel(corpus=mm_tfidf, id2word=id2token, num_topics=NUM_TOPICS, update_every=1, chunksize=1000,
+                          passes=4)
 
     #save trained model
     lda.save(options.prefix + '_lda_50.model')
