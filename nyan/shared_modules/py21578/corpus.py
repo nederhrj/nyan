@@ -44,7 +44,6 @@ class ReutersCorpus(object):
     Is iterable
     """
 
-
     def __init__(self, database):
         """
         Constructor
@@ -165,9 +164,9 @@ class R10Split(ModApteSplitCorpus):
         """
 
         def __init__(self, name, query, db):
-            '''
+            """
             TODO: make query a function
-            '''
+            """
             self.name = name
             self.query = query
             self.db = db
@@ -337,4 +336,3 @@ class R8Split(R10Split):
         for c in self.get_test_category_set():
             for _ in c:
                 yield self.target_map[c.name] 
-        

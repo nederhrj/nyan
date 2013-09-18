@@ -242,12 +242,11 @@ class FileDatabase(object):
                    FROM %s 
                    WHERE content = ?;""" % (relation_table_name,
                                             column_name,
-                                            category_table_name)#unsafe
+                                            category_table_name)  # unsafe
         for value in category_values:
             c.execute(query, (document_id, value,))
 
         self.conn.commit()
-
 
     def _load_legal_set(self, path):
         with open(path, 'r') as legal_list_file:
@@ -391,10 +390,10 @@ class FileDatabase(object):
                                          LEWISSPLIT=self._get_safe_attribute(reuters.find('REUTERS'), 'LEWISSPLIT'),
                                          TOPICS_Attribute=self._get_safe_attribute(reuters.find('REUTERS'), 'TOPICS'),
                                          CGISPLIT=self._get_safe_attribute(reuters.find('REUTERS'), 'CGISPLIT'),
-                                         OLDID=int(
-                                             self._get_safe_attribute(reuters.find('REUTERS'), 'OLDID', default=-1)),
-                                         NEWID=int(
-                                             self._get_safe_attribute(reuters.find('REUTERS'), 'NEWID', default=-1)))
+                                         OLDID=int(self._get_safe_attribute(reuters.find('REUTERS'),
+                                                                            'OLDID', default=-1)),
+                                         NEWID=int(self._get_safe_attribute(reuters.find('REUTERS'),
+                                                                            'NEWID', default=-1)))
 
                 #Add relations to database
                 topics = self._get_safe_categories(reuters, 'TOPICS')
@@ -453,25 +452,20 @@ class FileDatabase(object):
         self.conn = sqlite3.connect(database_path)
         self._create_tables()
 
-        #Leagal category lists
-        legal_topics = self._load_legal_set(os.path.join(reuters_path,
-                                                         "all-topics-strings.lc.txt"))
+        #Legal category lists
+        legal_topics = self._load_legal_set(os.path.join(reuters_path, "all-topics-strings.lc.txt"))
         self._add_legal_category_to_table(legal_topics, "topics")
 
-        legal_exchanges = self._load_legal_set(os.path.join(reuters_path,
-                                                            "all-exchanges-strings.lc.txt"))
+        legal_exchanges = self._load_legal_set(os.path.join(reuters_path, "all-exchanges-strings.lc.txt"))
         self._add_legal_category_to_table(legal_exchanges, "exchanges")
 
-        legal_places = self._load_legal_set(os.path.join(reuters_path,
-                                                         "all-places-strings.lc.txt"))
+        legal_places = self._load_legal_set(os.path.join(reuters_path, "all-places-strings.lc.txt"))
         self._add_legal_category_to_table(legal_places, "places")
 
-        legal_orgs = self._load_legal_set(os.path.join(reuters_path,
-                                                       "all-orgs-strings.lc.txt"))
+        legal_orgs = self._load_legal_set(os.path.join(reuters_path, "all-orgs-strings.lc.txt"))
         self._add_legal_category_to_table(legal_orgs, "orgs")
 
-        legal_people = self._load_legal_set(os.path.join(reuters_path,
-                                                         "all-people-strings.lc.txt"))
+        legal_people = self._load_legal_set(os.path.join(reuters_path, "all-people-strings.lc.txt"))
         self._add_legal_category_to_table(legal_people, "people")
 
         #Load and add documents
@@ -482,17 +476,13 @@ class FileDatabase(object):
     @classmethod
     def load(cls, database_path):
         logger.info("Load database from %s" % database_path)
-        return FileDatabase(reuters_path=None,
-                            database_path=database_path)
+        return FileDatabase(reuters_path=None, database_path=database_path)
 
 
 class InMemoryDatabase(FileDatabase):
     """
     Creates new database in memory
     """
-
     def __init__(self, reuters_path):
         super(InMemoryDatabase, self).__init__(reuters_path=reuters_path,
                                                database_path=":memory:")
-    
-                

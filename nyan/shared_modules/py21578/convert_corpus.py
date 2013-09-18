@@ -38,11 +38,9 @@ import numpy as np
 
 from corpus import R8Split
 from database import FileDatabase
-from nyan.feature_extractor.extractors import (LdaFeatureExtractor,
-                                          LdaBowFeatureExtractor,
-                                          TfidfFeatureExtractor,
-                                          cEsaFeatureExtractor)
-from nyan.feature_extractor.esa.cosine_esamodel import CosineEsaModel
+from nyan.shared_modules.feature_extractor.extractors import (LdaFeatureExtractor, LdaBowFeatureExtractor,
+                                                              TfidfFeatureExtractor, cEsaFeatureExtractor)
+from nyan.shared_modules.feature_extractor.esa.cosine_esamodel import CosineEsaModel
 
 
 logger = logging.getLogger("py21578")
@@ -79,7 +77,7 @@ if __name__ == '__main__':
     p.add_option('-l', '--log', action="store", dest='log',
                  help="specify log file")
     p.add_option('-o', '--prefix', action="store", dest='prefix',
-                     help="specify path prefix to find models etc.")
+                 help="specify path prefix to find models etc.")
     (options, args) = p.parse_args()
     
     logger.setLevel(logging.DEBUG)
@@ -109,7 +107,7 @@ if __name__ == '__main__':
     #Load feature models and extractor
     #feature_extractor = LdaBowFeatureExtractor(prefix = options.prefix)
     #feature_extractor = LdaFeatureExtractor(prefix = options.prefix)
-    feature_extractor = cEsaFeatureExtractor(prefix = options.path + '/models/cesa_on_reuters/wiki')
+    feature_extractor = cEsaFeatureExtractor(prefix=options.path + '/models/cesa_on_reuters/wiki')
     
     #Load database, training and test data
     db = FileDatabase.load(options.path + '/reuters.db')

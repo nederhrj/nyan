@@ -8,3 +8,6 @@ flask
 flask-login
 mongoengine
 nltk
+BeautifulSoup4
+pattern
+multiprocessing

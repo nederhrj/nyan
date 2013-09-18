@@ -35,6 +35,7 @@ import sys
 
 from gensim import utils, corpora, models
 
+from database import FileDatabase
 from corpus import R8Split
 
 
@@ -108,7 +109,7 @@ if __name__ == '__main__':
                  help="specify path to Reuters-21579 files")
     p.add_option('-l', '--log', action="store", dest='log',
                  help="specify log file")
-    p.add_option('-o', '--output-prefix', action="store", dest='prefix',
+    p.add_option('-o', '--prefix', action="store", dest='prefix',
                  help="specify path prefix where everything should be saved")
     (options, args) = p.parse_args()
 
@@ -136,14 +137,14 @@ if __name__ == '__main__':
         logger.error("Path to Reuters-21578 dataset not set.")
         sys.exit(1)
 
-        #db = FileDatabase.load(database_path =  options.path + "/reuters.db")
+    db = FileDatabase.load(database_path=options.path + "/reuters.db")
 
     #Init clean corpus
-    #corpus = CleanCorpus(db = db)
+    corpus = CleanCorpus(db=db)
 
     #save dictionary: word <-> token id map
-    #corpus.dictionary.save(options.prefix + "_wordids.dict")
-    #corpus.dictionary.save_as_text(options.prefix + "_wordids.dict.txt")
+    corpus.dictionary.save(options.prefix + "_wordids.dict")
+    corpus.dictionary.save_as_text(options.prefix + "_wordids.dict.txt")
 
     #del corpus
 

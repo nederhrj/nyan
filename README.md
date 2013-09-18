@@ -45,15 +45,16 @@ The system uses a MongoDB database.
 
 All programs depend on several libraries. The following list might not be complete.
 
-### feed_crawler
+### feed_crawler (Ruby)
 - nokogiri
 - feedzirra
 - log4r
 - psych
 - dbi
 - stomp
+- sqlite3
 
-### article_ranker, feature_extractor
+### article_ranker, feature_extractor (Python)
 - yaml
 - gensim
 - numpy, scipy
@@ -64,6 +65,11 @@ All programs depend on several libraries. The following list might not be comple
 - flask
 - flask-login plugin
 - mongoengine
+
+### Optional (for creating models) (Python)
+- multiprocessor
+- pattern
+- BeautifulSoup4
 
 
 
