@@ -38,6 +38,9 @@ import unittest
 
 logger = logging.getLogger("unittesting")
 
+TESTDIR = ''
+PREFIX = 'reuters'
+
 # set up vars used in testing ("Deerwester" from the web tutorial)
 texts = [['human', 'interface', 'computer'],  # human interface
  ['survey', 'user', 'computer', 'system', 'response', 'time'],  # computer systems
@@ -89,16 +92,16 @@ class TestESAModel(unittest.TestCase):
     def test_constructor_with_file_wikicorpus(self):
         
         #load tf-idf corpus
-        tfidf_corpus = MmCorpus('/media/sdc1/test_dump/result/test_tfidf_corpus.mm')
+        tfidf_corpus = MmCorpus(TESTDIR + PREFIX + '_tfidf_corpus.mm')
         
         #load lda corpus
         #lda_corpus = MmCorpus('/media/sdc1/test_dump/result/test_lda_corpus.mm')
         
         #load dictionary
-        id2token = Dictionary.load("/media/sdc1/test_dump/result/test_wordids.dict")
+        id2token = Dictionary.load(TESTDIR + PREFIX + '_wordids.dict')
         
         #load article titles
-        document_titles = DocumentTitles.load("/media/sdc1/test_dump/result/test_articles.txt")
+        document_titles = DocumentTitles.load(TESTDIR + PREFIX + '_articles.txt')
 
         #train esa model
         esa_model = EsaModel(tfidf_corpus, num_clusters=15, document_titles=document_titles,
@@ -106,34 +109,34 @@ class TestESAModel(unittest.TestCase):
         
         print esa_model
         
-        esa_model.save('/media/sdc1/test_dump/result/wiki_esa.model')
+        esa_model.save(TESTDIR + PREFIX + '_esa.model')
         
-        tmp_esa = EsaModel.load('/media/sdc1/test_dump/result/wiki_esa.model') 
+        tmp_esa = EsaModel.load(TESTDIR + PREFIX + '_esa.model')
         print tmp_esa  
         
     @unittest.skip("too big")
     def test_constructor_with_big_file_wikicorpus(self):
         
         #load tf-idf corpus
-        tfidf_corpus = MmCorpus('/media/sdc1/test_dump/result/wiki_tfidf_corpus.mm')
+        tfidf_corpus = MmCorpus(TESTDIR + PREFIX + '_tfidf_corpus.mm')
         
         #load lda corpus
         #lda_corpus = MmCorpus('/media/sdc1/test_dump/result/test_lda_corpus.mm')
         
         #load dictionary
-        id2token = Dictionary.load("/media/sdc1/test_dump/result/wiki_wordids.dict")
+        id2token = Dictionary.load(TESTDIR + PREFIX + '_wordids.dict')
         
         #load article titles
-        document_titles = DocumentTitles.load("/media/sdc1/test_dump/result/wiki_articles.txt")
+        document_titles = DocumentTitles.load(TESTDIR + PREFIX + '_articles.txt')
 
         #train esa model
         esa_model = EsaModel(tfidf_corpus, num_clusters=15, document_titles=document_titles, num_features=len(id2token))
         
         print esa_model
         
-        esa_model.save('/media/sdc1/test_dump/result/wiki_esa.model')
+        esa_model.save(TESTDIR + PREFIX + '_esa.model')
         
-        tmp_esa = EsaModel.load('/media/sdc1/test_dump/result/wiki_esa.model') 
+        tmp_esa = EsaModel.load(TESTDIR + PREFIX + '_esa.model')
         print tmp_esa  
         
 
