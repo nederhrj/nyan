@@ -484,5 +484,5 @@ class InMemoryDatabase(FileDatabase):
     Creates new database in memory
     """
     def __init__(self, reuters_path):
-        super(InMemoryDatabase, self).__init__(reuters_path=reuters_path,
-                                               database_path=":memory:")
+        # super(InMemoryDatabase, self).__init__(reuters_path=reuters_path, database_path=":memory:")
+        super(InMemoryDatabase, self).__init__(reuters_path=reuters_path, database_path=":memory:")

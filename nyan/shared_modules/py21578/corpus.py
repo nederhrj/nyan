@@ -139,7 +139,7 @@ class ModApteSplitCorpus(ModLewisSplitCorpus):
         """
         Generator over test set
         """
-        for doc in self.db.get_conn().execute("""SELECT body 
+        for doc in self.db.get_conn().execute("""SELECT body
                                         FROM documents 
                                         WHERE (LEWISSPLIT='TEST' AND 
                                               TOPICS_Attribute='YES')
@@ -335,4 +335,4 @@ class R8Split(R10Split):
         """
         for c in self.get_test_category_set():
             for _ in c:
-                yield self.target_map[c.name] 
+                yield self.target_map[c.name]
