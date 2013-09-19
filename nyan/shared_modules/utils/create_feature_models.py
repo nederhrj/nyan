@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,19 +20,21 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
-'''
+"""
 Created on 22.11.2012
 
 @author: karsten jeschkies <jeskar@web.de>
-'''
+"""
 
 from gensim import utils, corpora, models
 import logging
 
 #from esamodel import EsaModel, DocumentTitles
-from utils.daemon import Daemon 
+from nyan.shared_modules.utils.daemon import Daemon
+from nyan.shared_modules.feature_extractor.esa.esamodel import EsaModel, DocumentTitles
+
 import sys
 
 # Wiki is first scanned for all distinct word types (~7M). The types that appear
@@ -73,7 +75,7 @@ class ModelLearningDaemon(Daemon):
         
         #del corpus
         
-        '''Bag-of-Words'''
+        """Bag-of-Words"""
         
         #init corpus reader and word -> id map
         #id2token = corpora.Dictionary.load(options.prefix + "_wordids.dict")
@@ -94,7 +96,7 @@ class ModelLearningDaemon(Daemon):
         id2token = corpora.Dictionary.load(self.prefix + "_wordids.dict")
         #mm_bow = corpora.MmCorpus(options.prefix + '_bow_corpus.mm')
         
-        '''TFIDF Model creation'''
+        """TFIDF Model creation"""
         
         #build tfidf model
         #tfidf = models.TfidfModel(mm_bow, id2word=id2token, normalize=True)
@@ -110,7 +112,7 @@ class ModelLearningDaemon(Daemon):
         #init tfidf-corpus reader
         mm_tfidf = corpora.MmCorpus(self.prefix + '_tfidf_corpus.mm')
         
-        '''LDA Model creation'''
+        """LDA Model creation"""
         
         #build lda model
         lda = models.LdaModel(corpus=mm_tfidf, id2word=id2token, 
@@ -121,23 +123,21 @@ class ModelLearningDaemon(Daemon):
         lda.save(self.prefix + '_lda.model')
         
         #save corpus as lda vectors in matrix market format
-        #corpora.MmCorpus.serialize(options.prefix + '_lda_corpus.mm', lda[mm_tfidf], 
-        #                           progress_cnt=10000)
+        corpora.MmCorpus.serialize(options.prefix + '_lda_corpus.mm', lda[mm_tfidf],
+                                   progress_cnt=10000)
         
         #init lda-corpus reader
-        #mm_lda = corpora.MmCorpus(options.prefix + '_lda_corpus.mm')
+        mm_lda = corpora.MmCorpus(options.prefix + '_lda_corpus.mm')
         
-        '''ESA Model creation'''
+        """ESA Model creation"""
         
         #document titles
-        #article_titles = DocumentTitles.load(options.prefix + "_articles.txt")
+        article_titles = DocumentTitles.load(options.prefix + "_articles.txt")
         
         #build esa model
-        #esa = EsaModel(mm_lda, num_clusters = 10000, 
-        #                       document_titles = article_titles,
-        #                       num_features = NUM_TOPICS)
+        esa = EsaModel(mm_lda, num_clusters=10000, document_titles=article_titles, num_features=NUM_TOPICS)
         
-        #esa.save(options.prefix + "_esa_on_lda.model")
+        esa.save(options.prefix + "_esa_on_lda.model")
         
         self.logger.info("finished transforming")
 

@@ -64,8 +64,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     #load dictionary, tfidf model, lda model, esa model
-    logger.info("Load dictionary, tfidf model, lda model and esa model with prefix %s"
-                % options.prefix)
+    logger.info("Load dictionary, tfidf model, lda model and esa model with prefix %s" % options.prefix)
     dictionary = corpora.Dictionary.load(options.prefix + "_wordids.dict")
     tfidf_model = models.TfidfModel.load(options.prefix + "_tfidf.model")
     lda_model = models.LdaModel.load(options.prefix + "_lda.model")

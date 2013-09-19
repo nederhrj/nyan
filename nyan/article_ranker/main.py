@@ -94,7 +94,7 @@ class ArticleRankerDaemon(Daemon):
                             level=logging.DEBUG,
                             filename=log_file)
         try:
-            if config_file != None:
+            if config_file is not None:
                 stream = file(config_file, 'r')
                 self.config_ = yaml.load(stream)
                 stream.close()
