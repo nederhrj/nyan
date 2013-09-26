@@ -200,15 +200,13 @@ class EsaModel(interfaces.TransformationABC):
         """
         See MatrixSimilarity.save()
         """
-        logger.info("storing %s object to %s and %s" % (self.__class__.__name__,
-                                                        fname,
-                                                        fname + '.npy'))
+        logger.info("storing %s object to %s and %s" % (self.__class__.__name__, fname, fname + '.npy'))
         # first, remove the index from self.__dict__, so it doesn't get pickled
         index = self.corpus
         del self.corpus
         try:
-            utils.pickle(self, fname) # store index-less object
-            numpy.save(fname + '.npy', index) # store index
+            utils.pickle(self, fname)  # store index-less object
+            numpy.save(fname + '.npy', index)  # store index
         finally:
             self.corpus = index
 
@@ -220,6 +218,6 @@ class EsaModel(interfaces.TransformationABC):
         """
         logger.info("loading %s object from %s" % (cls.__name__, fname))
         result = utils.unpickle(fname)
-        result.corpus = numpy.load(fname + '.npy', mmap_mode='r') # load back as read-only
+        result.corpus = numpy.load(fname + '.npy', mmap_mode='r')  # load back as read-only
         return result
         #endclass EsaModel

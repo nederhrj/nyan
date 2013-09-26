@@ -100,8 +100,7 @@ class CleanCorpus(corpora.TextCorpus):
     Stems all words and removes stop words. Tokenizes each document
     """
 
-    def __init__(self, fname, no_below=NO_BELOW, keep_words=DEFAULT_DICT_SIZE, 
-                 dictionary=None):
+    def __init__(self, fname, no_below=NO_BELOW, keep_words=DEFAULT_DICT_SIZE, dictionary=None):
         """
         See gensim.corpora.textcorpus for details.
         
@@ -253,7 +252,8 @@ if __name__ == "__main__":
     """LDA Model creation"""
     
     #build lda model
-    lda = models.LdaModel(corpus=mm_tfidf, id2word=id2token, num_topics=NUM_TOPICS, update_every=1, chunksize=10000, passes=2)
+    lda = models.LdaModel(corpus=mm_tfidf, id2word=id2token, num_topics=NUM_TOPICS, update_every=1, chunksize=10000,
+                          passes=2)
     
     #save trained model
     lda.save(options.prefix + '_lda.model')
