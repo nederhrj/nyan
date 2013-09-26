@@ -25,40 +25,43 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 Just some helper functions used quite often
 '''
-import logging
 import sys
 import yaml
 
 configs = {}
 
+
 def load_config(file_path, logger, exit_with_error=False):
-    '''
+    """
     :param exit_with_error : If set to True the function will call sys.exit(1)
                              thus quitting the program 
                              
     returns config as dict
-    '''
-    
+    """
+
     #check if config file was loaded already
     if file_path in configs.keys():
         return configs[file_path]
-    
+
     if file_path is None:
         logger.error("Path to config is None.")
-        if exit_with_error: sys.exit(1)
-    
+        if exit_with_error:
+            sys.exit(1)
+
     with open(file_path, 'r') as config_file:
         try:
             config_ = yaml.load(config_file)
         except Exception as inst:
             logger.error("Unknown error %s: %s" % (type(inst), inst))
-            if exit_with_error: sys.exit(1)
-        
-    if config_ == None:
+            if exit_with_error:
+                sys.exit(1)
+
+    if config_ is None:
         logger.error("No config. Exit.")
-        if exit_with_error: sys.exit(1)
-    
+        if exit_with_error:
+            sys.exit(1)
+
     #add config 
-    configs[file_path] = config_    
-    
+    configs[file_path] = config_
+
     return config_
