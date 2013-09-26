@@ -182,9 +182,7 @@ class EsaModel(interfaces.TransformationABC):
         #use corpus as interpreter matrix
         #simply multiply feature vector of input with corpus matrix
         #to get the weight of the concept
-        vector = numpy.dot(matutils.sparse2full(bow, self.num_features),
-                           self.corpus)
-
+        vector = numpy.dot(matutils.sparse2full(bow, self.num_features), self.corpus)
 
         #normalize
         vector = matutils.unitvec(vector)
@@ -209,7 +207,6 @@ class EsaModel(interfaces.TransformationABC):
             numpy.save(fname + '.npy', index)  # store index
         finally:
             self.corpus = index
-
 
     @classmethod
     def load(cls, fname):

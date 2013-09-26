@@ -24,18 +24,15 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
+from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor
 import json
 import logging
 import socket
 import sys
 import time
-
+from nyan.shared_modules.utils.daemon import Daemon
 import stomp  # needs to be after daemon for some reason
 import yaml
-
-from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor
-from nyan.shared_modules.utils.daemon import Daemon
-
 
 """
 Receives news articles in a STOMP message from the feed crawler. 
