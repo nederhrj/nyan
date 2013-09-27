@@ -100,12 +100,11 @@ class CleanCorpus(corpora.TextCorpus):
     Stems all words and removes stop words. Tokenizes each document
     """
 
-    def __init__(self, fname, no_below=NO_BELOW, keep_words=DEFAULT_DICT_SIZE, 
-                 dictionary=None):
+    def __init__(self, fname, no_below=NO_BELOW, keep_words=DEFAULT_DICT_SIZE, dictionary=None):
         """
         See gensim.corpora.textcorpus for details.
         
-        :param fnam: The path to scan for documents.
+        :param fname: The path to scan for documents.
         """
         
         self.fname = fname
@@ -207,66 +206,60 @@ if __name__ == "__main__":
     logging.root.setLevel(level=logging.INFO)
     logger.info("running %s" % ' '.join(sys.argv))
     
-    #corpus = CleanCorpus(options.doc_path)
+    corpus = CleanCorpus(options.doc_path)
     
     #save dictionary: word <-> token id map
-    #corpus.dictionary.save(options.prefix + "_wordids.dict")
-    #save(lambda path: corpus.dictionary.save(path), 
-    #     options.prefix + "_wordids.dict")
-    #corpus.dictionary.save_as_text(options.prefix + "_wordids.dict.txt")
+    corpus.dictionary.save(options.prefix + "_wordids.dict")
+    save(lambda path: corpus.dictionary.save(path), options.prefix + "_wordids.dict")
+    corpus.dictionary.save_as_text(options.prefix + "_wordids.dict.txt")
     
     #del corpus
     
     """Bag-of-Words"""
     
     #init corpus reader and word -> id map
-    #id2token = corpora.Dictionary.load(options.prefix + "_wordids.dict")
-    #new_corpus = CleanCorpus(options.doc_path, dictionary = id2token)
+    id2token = corpora.Dictionary.load(options.prefix + "_wordids.dict")
+    new_corpus = CleanCorpus(options.doc_path, dictionary = id2token)
     
     #create and save bow-representation of corpus
-    #corpora.MmCorpus.serialize(options.prefix + '_bow_corpus.mm', new_corpus,
-    #                         progress_cnt=10000)
+    corpora.MmCorpus.serialize(options.prefix + '_bow_corpus.mm', new_corpus, progress_cnt=10000)
     
     #save article names
-    #new_corpus.save_article_names(options.prefix + "_articles.txt")
+    new_corpus.save_article_names(options.prefix + "_articles.txt")
     
-    #new_corpus.load_article_names(options.prefix + "_articles.txt")
+    new_corpus.load_article_names(options.prefix + "_articles.txt")
     
     #del new_corpus
     
     #init corpus reader and word -> id map
     id2token = corpora.Dictionary.load(options.prefix + "_wordids.dict")
-    #mm_bow = corpora.MmCorpus(options.prefix + '_bow_corpus.mm')
+    mm_bow = corpora.MmCorpus(options.prefix + '_bow_corpus.mm')
     
     """TFIDF Model creation"""
     
     #build tfidf model
-    #tfidf = models.TfidfModel(mm_bow, id2word=id2token, normalize=True)
+    tfidf = models.TfidfModel(mm_bow, id2word=id2token, normalize=True)
     
     #save tfidf model
-    #tfidf.save(options.prefix + '_tfidf.model')
+    tfidf.save(options.prefix + '_tfidf.model')
     
     #save corpus as tfidf vectors in matrix market format
-    #corpora.MmCorpus.serialize(options.prefix + '_tfidf_corpus.mm', tfidf[mm_bow], 
-    #                           progress_cnt=10000)
-
+    corpora.MmCorpus.serialize(options.prefix + '_tfidf_corpus.mm', tfidf[mm_bow], progress_cnt=10000)
     
     #init tfidf-corpus reader
-    #mm_tfidf = corpora.MmCorpus(options.prefix + '_tfidf_corpus.mm')
+    mm_tfidf = corpora.MmCorpus(options.prefix + '_tfidf_corpus.mm')
     
     """LDA Model creation"""
     
     #build lda model
-    #lda = models.LdaModel(corpus=mm_tfidf, id2word=id2token, 
-    #                      num_topics=NUM_TOPICS, update_every=1, 
-    #                      chunksize=10000, passes=2) 
+    lda = models.LdaModel(corpus=mm_tfidf, id2word=id2token, num_topics=NUM_TOPICS, update_every=1, chunksize=10000,
+                          passes=2)
     
     #save trained model
-    #lda.save(options.prefix + '_lda.model')
+    lda.save(options.prefix + '_lda.model')
     
     #save corpus as lda vectors in matrix market format
-    #corpora.MmCorpus.serialize(options.prefix + '_lda_corpus.mm', lda[mm_tfidf], 
-    #                           progress_cnt=10000)
+    corpora.MmCorpus.serialize(options.prefix + '_lda_corpus.mm', lda[mm_tfidf], progress_cnt=10000)
     
     #init lda-corpus reader
     mm_lda = corpora.MmCorpus(options.prefix + '_lda_corpus.mm')
