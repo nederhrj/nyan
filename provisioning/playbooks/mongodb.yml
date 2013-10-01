@@ -1,0 +1,21 @@
+---
+- name: Configure the mongodb instance
+  hosts: all
+  user: vagrant
+  gather_facts: true
+
+  tasks:
+    - name: Check NTP
+      action: service name=ntpd state=started
+
+    - name: Copy MongoDB repo file
+      action: copy src=files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
+
+    - name: Install packages
+      action: yum pkg=$item state=latest
+      with_items:
+        - mongo-10gen
+        - mongo-10gen-server
+
+    - name: Configure MongoDB
+      action: service name=mongod state=started enabled=yes

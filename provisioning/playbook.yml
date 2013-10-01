@@ -1,0 +1,15 @@
+---
+- hosts: all
+  name: Configure ntpd
+  user: vagrant
+  tasks:
+    - name: ensure ntpd is at the latest version
+      yum: pkg=ntp state=latest
+      notify:
+      - restart ntpd
+  handlers:
+    - name: restart ntpd
+      service: name=ntpd state=restarted
+
+#  include: playbooks/mongodb.yml
+...
