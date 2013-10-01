@@ -9,7 +9,7 @@
       action: service name=ntpd state=started
 
     - name: Copy MongoDB repo file
-      action: copy src=files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
+      action: copy src=../files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
 
     - name: Install packages
       action: yum pkg=$item state=latest

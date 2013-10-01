@@ -2,6 +2,7 @@
 - hosts: all
   name: Configure ntpd
   user: vagrant
+  sudo: True
   tasks:
     - name: ensure ntpd is at the latest version
       yum: pkg=ntp state=latest
@@ -12,7 +13,7 @@
       service: name=ntpd state=restarted
 
 - hosts: all
-  name: Copy MongoDB repo file
+  name: Configure packages
   user: vagrant
   sudo: True
   tasks:
@@ -27,6 +28,18 @@
 
     - name: Configure MongoDB
       action: service name=mongod state=started enabled=yes
+
+    - name: Add EPEL as yum repository
+      action: copy src=../provisioning/files/epel.repo dest=/etc/yum.repos.d/epel.repo
+      tags: python
+
+    - name: Create the GPG key for EPEL
+      copy: src=../provisioning/files/RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
+      tags: python
+
+    - name: Install Python pip
+      action: yum pkg=python-pip state=installed
+      tags: python
 
 
 

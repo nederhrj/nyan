@@ -57,3 +57,7 @@ log.txt
 *.index
 *.model
 *.dict.txt
+data/*
+
+# Vagrant
+.vagrant
