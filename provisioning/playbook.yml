@@ -11,5 +11,25 @@
     - name: restart ntpd
       service: name=ntpd state=restarted
 
-#  include: playbooks/mongodb.yml
+- hosts: all
+  name: Copy MongoDB repo file
+  user: vagrant
+  sudo: True
+  tasks:
+    - name: Add Yum repository
+      action: copy src=../provisioning/files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
+
+    - name: Install packages
+      action: yum pkg=$item state=latest
+      with_items:
+        - mongo-10gen
+        - mongo-10gen-server
+
+    - name: Configure MongoDB
+      action: service name=mongod state=started enabled=yes
+
+
+
+
+  #include: playbooks/mongodb.yml
 ...
