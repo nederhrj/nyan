@@ -19,28 +19,46 @@
   tasks:
     - name: Add Yum repository
       action: copy src=../provisioning/files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
+      tags: yum
 
-    - name: Install packages
+    - name: Install MongoDB packages
       action: yum pkg=$item state=latest
       with_items:
         - mongo-10gen
         - mongo-10gen-server
+      tags: mongodb
 
     - name: Configure MongoDB
       action: service name=mongod state=started enabled=yes
+      tags: mongodb
 
     - name: Add EPEL as yum repository
       action: copy src=../provisioning/files/epel.repo dest=/etc/yum.repos.d/epel.repo
-      tags: python
+      tags: epel
 
     - name: Create the GPG key for EPEL
       copy: src=../provisioning/files/RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
-      tags: python
+      tags: epel
 
     - name: Install Python pip
       action: yum pkg=python-pip state=installed
       tags: python
 
+    - name: Install CoilMQ
+      action: pip name=coilmq version=0.6.1
+      tags: coilmq
+
+    - name: Install GIT
+      action: yum name=git
+      tags: gitinstall
+
+    - name: Install Nyan Project
+      action: git repo=git://github.com/nederhrj/nyan.git dest=/home/nyan
+      tags: nyanproject
+
+    - name: Install Nyan Project Requirements
+      action: pip requirements=/home/nyan/requirements.txt
+      tags: nyanproject
 
 
 

@@ -3,10 +3,10 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.provision "shell", inline: "echo Hello"
-    config.vm.box = "Centos 6.4"
+    config.vm.box = "Centos 6.4 x32"
 
     config.vm.define "nyan" do |nyan|
-      #nyan.vm.box = "Centos 6.4"
+      #nyan.vm.box = "Centos 6.4 x32"
 
       nyan.vm.provider :virtualbox do |vb|
       #  vb.customize ["modifyvm", :id, "--memory", "1024", "--name", "ansible-plaything"]

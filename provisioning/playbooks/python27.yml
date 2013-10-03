@@ -1,0 +1,41 @@
+---
+- name: Python 2.7.5 Installation
+  hosts: all
+  user: vagrant
+  sudo: True
+
+  - name: Install GCC
+      action: yum name=gcc
+      tags: python27
+
+    - name: Get Python 2.7.5
+      action: command wget http://www.python.org/ftp/python/2.7.5/Python-2.7.5.tgz
+      tags: python27
+
+    - name: Extract Python 2.7.5
+      action: command tar -xzf Python-2.7.5.tgz
+      tags: python27
+
+    - name: Go to directory Python 2.7.5
+      action: command cd Python-2.7.5
+      tags: python27
+
+    - name: Configure Python 2.7.5
+      action: command ./configure
+      tags: python27
+
+    - name: Prepare Python 2.7.5 Install
+      action: command make
+      tags: python27
+
+    - name: Install Python 2.7.5
+      action: command make altinstall
+      tags: python27
+
+    - name: Remove download of Python 2.7.5.tgz
+      action: command cd ..
+      tags: python27
+
+    - name: Remove downloadfile
+      action: command rm Python-2.7.5.tgz
+      tags: python27
