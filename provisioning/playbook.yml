@@ -58,7 +58,7 @@
 
     - name: Install Nyan Project Requirements
       action: pip requirements=/home/nyan/requirements.txt
-      tags: nyanproject
+      tags: nyanprojectrequirements
 
 
 
