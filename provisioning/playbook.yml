@@ -12,10 +12,16 @@
     - name: restart ntpd
       service: name=ntpd state=restarted
 
+
+
+
 - hosts: all
   name: Configure packages
   user: vagrant
   sudo: True
+
+  #include: playbooks/python27.yml
+
   tasks:
     - name: Add Yum repository
       action: copy src=../provisioning/files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
@@ -27,6 +33,14 @@
         - mongo-10gen
         - mongo-10gen-server
       tags: mongodb
+
+    - name: MongoDB | Push default configuration template
+      template:
+        src=../provisioning/files/mongodb.conf.j2
+        dest=/etc/mongodb.conf
+        owner=root group=root mode=0644
+      notify:
+      - mongodb-restart
 
     - name: Configure MongoDB
       action: service name=mongod state=started enabled=yes
@@ -43,6 +57,16 @@
     - name: Install Python pip
       action: yum pkg=python-pip state=installed
       tags: python
+
+    - name: Install dependencies for python
+      action: yum pkg={{item}} state=installed
+      with_items:
+        - gcc-gfortran
+        - gcc44-gfortran
+        - libgfortran
+        - lapack
+        - blas
+        - python-devel
 
     - name: Install dependancies
       action: pip name={{item}}

@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ansible.playbook = "provisioning/playbook.yml"
       end
 
-      #nyan.vm.network :forwarded_port, guest: 8080, host: 3751
+      nyan.vm.network :forwarded_port, guest: 5000, host: 5000
       #nyan.vm.network :forwarded_port, guest: 80, host: 3750
       # config.vm.network :private_network, ip: "192.168.33.10"
       # config.vm.network :public_network

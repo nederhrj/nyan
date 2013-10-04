@@ -4,7 +4,11 @@
   user: vagrant
   sudo: True
 
-  - name: Install GCC
+  vars:
+    python_path: /usr/local/bin
+
+  tasks:
+    - name: Install GCC
       action: yum name=gcc
       tags: python27
 
@@ -13,29 +17,38 @@
       tags: python27
 
     - name: Extract Python 2.7.5
-      action: command tar -xzf Python-2.7.5.tgz
+      action: command tar xvfz Python-2.7.5.tgz
       tags: python27
 
-    - name: Go to directory Python 2.7.5
-      action: command cd Python-2.7.5
+    - name: Change owner (for some reason it's set at user 1000. Weird)
+      action: command chown -R vagrant:vagrant Python-2.7.5
       tags: python27
 
     - name: Configure Python 2.7.5
-      action: command ./configure
+      action: command ./configure chdir=/home/vagrant/Python-2.7.5
       tags: python27
 
     - name: Prepare Python 2.7.5 Install
-      action: command make
+      action: command make chdir=/home/vagrant/Python-2.7.5
       tags: python27
 
     - name: Install Python 2.7.5
-      action: command make altinstall
+      action: command make altinstall chdir=/home/vagrant/Python-2.7.5
       tags: python27
 
-    - name: Remove download of Python 2.7.5.tgz
-      action: command cd ..
+    - name: Link python 2.7 to python
+      action: command ln -sf /usr/local/bin/python2.7 /usr/local/bin/python
       tags: python27
 
     - name: Remove downloadfile
-      action: command rm Python-2.7.5.tgz
+      action: command rm -rf /home/vagrant/Python-2.7.5*
       tags: python27
+
+    - name: add {{python_path}} to path
+      lineinfile: dest=/home/vagrant/.bash_profile
+                  state=present
+                  backrefs=yes
+                  regexp='PATH=(["]*)((?!.*?{{python_path}}).*?)(["]*)$'
+                  line="PATH={{python_path}}:\1\2\3"
+      tags: python27
+...
