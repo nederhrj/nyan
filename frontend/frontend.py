@@ -36,8 +36,8 @@ app = Flask(__name__)
 #salt for hashing etc.
 SALT = u""
 
-#Load non-FLASK config 
-config = load_config("../config.yaml", app.logger)
+#Load non-FLASK config
+config = load_config("config.yaml", app.logger)
 
 #Flask config
 try:

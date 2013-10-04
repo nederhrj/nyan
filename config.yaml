@@ -2,12 +2,12 @@
   #details for accessing mongodb
   database:
     host: "localhost"
-    user: "blacklab"
+    user: "root"
     passwd: ""
     db-name: ""
     port: 27017
   #prefix for tfidf, lda and esa model
-  prefix: "/home/rawn/data/wiki"
+  prefix: "/data/wiki"
   #minimum rating for top-news
   rating: 0.1
   #config for flask
@@ -15,5 +15,5 @@
     secret_key: "very secret"
     debug: True
 
-  directory: /home/rawn/data/wiki_wordids.dict
+  directory: /data/wiki_wordids.dict
 ...

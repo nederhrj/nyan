@@ -44,6 +44,20 @@
       action: yum pkg=python-pip state=installed
       tags: python
 
+    - name: Install dependancies
+      action: pip name={{item}}
+      with_items:
+        - numpy
+        - scipy
+        - python-matplotlib
+        - ipython
+        - python-pandas
+        - sympy
+        - python-nose
+        - nltk
+        - multiprocessing
+      tags: dependancy
+
     - name: Install CoilMQ
       action: pip name=coilmq version=0.6.1
       tags: coilmq
