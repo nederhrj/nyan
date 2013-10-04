@@ -29,7 +29,8 @@
       tags: yum
 
     - name: Update Yum
-      action: command yum -f update
+      action: command yum -y update
+      sudo: True
       tags: yumupdate
 
     - name: Install MongoDB packages
