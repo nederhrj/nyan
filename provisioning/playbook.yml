@@ -11,7 +11,8 @@
   handlers:
     - name: restart ntpd
       service: name=ntpd state=restarted
-
+    - name: mongodb-restart
+      service: name=mongod state=restarted
 
 
 
@@ -26,6 +27,10 @@
     - name: Add Yum repository
       action: copy src=../provisioning/files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
       tags: yum
+
+    - name: Update Yum
+      action: command yum -f update
+      tags: yumupdate
 
     - name: Install MongoDB packages
       action: yum pkg=$item state=latest
@@ -58,15 +63,21 @@
       action: yum pkg=python-pip state=installed
       tags: python
 
+
+    - name: Update dependancy
+      action: command easy_install -U distribute
+      tags: updatedistribute
+
     - name: Install dependencies for python
       action: yum pkg={{item}} state=installed
       with_items:
         - gcc-gfortran
-        - gcc44-gfortran
+        #- gcc44-gfortran
         - libgfortran
         - lapack
         - blas
         - python-devel
+      tags: pythondependancy
 
     - name: Install dependancies
       action: pip name={{item}}
@@ -97,8 +108,6 @@
     - name: Install Nyan Project Requirements
       action: pip requirements=/home/nyan/requirements.txt
       tags: nyanprojectrequirements
-
-
 
   #include: playbooks/mongodb.yml
 ...
