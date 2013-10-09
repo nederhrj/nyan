@@ -8,15 +8,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.define "nyan" do |nyan|
       #nyan.vm.box = "Centos 6.4 x32"
 
+
       nyan.vm.provider :virtualbox do |vb|
       #  vb.customize ["modifyvm", :id, "--memory", "1024", "--name", "ansible-plaything"]
         vb.name = "nyan"
+        vb.gui = true
       end
 
       #config.vm.box_url = "http://files.vagrantup.com/precise32.box"
       # config.vm.network :private_network, ip: "192.168.111.222"
       nyan.vm.provision "ansible" do |ansible|
         ansible.playbook = "provisioning/playbook.yml"
+        ansible.verbose = true
       end
 
       nyan.vm.network :forwarded_port, guest: 5000, host: 5000

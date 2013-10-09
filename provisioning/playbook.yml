@@ -3,6 +3,7 @@
   name: Configure ntpd
   user: vagrant
   sudo: True
+
   tasks:
     - name: ensure ntpd is at the latest version
       yum: pkg=ntp state=latest
@@ -11,104 +12,6 @@
   handlers:
     - name: restart ntpd
       service: name=ntpd state=restarted
-    - name: mongodb-restart
-      service: name=mongod state=restarted
 
-
-
-- hosts: all
-  name: Configure packages
-  user: vagrant
-  sudo: True
-
-  #include: playbooks/python27.yml
-
-  tasks:
-    - name: Add Yum repository
-      action: copy src=../provisioning/files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
-      tags: yum
-
-    - name: Update Yum
-      action: command yum -y update
-      sudo: True
-      tags: yumupdate
-
-    - name: Install MongoDB packages
-      action: yum pkg=$item state=latest
-      with_items:
-        - mongo-10gen
-        - mongo-10gen-server
-      tags: mongodb
-
-    - name: MongoDB | Push default configuration template
-      template:
-        src=../provisioning/files/mongodb.conf.j2
-        dest=/etc/mongodb.conf
-        owner=root group=root mode=0644
-      notify:
-      - mongodb-restart
-
-    - name: Configure MongoDB
-      action: service name=mongod state=started enabled=yes
-      tags: mongodb
-
-    - name: Add EPEL as yum repository
-      action: copy src=../provisioning/files/epel.repo dest=/etc/yum.repos.d/epel.repo
-      tags: epel
-
-    - name: Create the GPG key for EPEL
-      copy: src=../provisioning/files/RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
-      tags: epel
-
-    - name: Install Python pip
-      action: yum pkg=python-pip state=installed
-      tags: python
-
-
-    - name: Update dependancy
-      action: command easy_install -U distribute
-      tags: updatedistribute
-
-    - name: Install dependencies for python
-      action: yum pkg={{item}} state=installed
-      with_items:
-        - gcc-gfortran
-        #- gcc44-gfortran
-        - libgfortran
-        - lapack
-        - blas
-        - python-devel
-      tags: pythondependancy
-
-    - name: Install dependancies
-      action: pip name={{item}}
-      with_items:
-        - numpy
-        - scipy
-        - python-matplotlib
-        - ipython
-        - python-pandas
-        - sympy
-        - python-nose
-        - nltk
-        - multiprocessing
-      tags: dependancy
-
-    - name: Install CoilMQ
-      action: pip name=coilmq version=0.6.1
-      tags: coilmq
-
-    - name: Install GIT
-      action: yum name=git
-      tags: gitinstall
-
-    - name: Install Nyan Project
-      action: git repo=git://github.com/nederhrj/nyan.git dest=/home/nyan
-      tags: nyanproject
-
-    - name: Install Nyan Project Requirements
-      action: pip requirements=/home/nyan/requirements.txt
-      tags: nyanprojectrequirements
-
-  #include: playbooks/mongodb.yml
+  include: playbooks/initialize.yml
 ...

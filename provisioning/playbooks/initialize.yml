@@ -1,0 +1,169 @@
+---
+- hosts: all
+  name: Configure packages
+  user: vagrant
+  sudo: True
+  gather_facts: true
+
+  vars:
+      python_path: /usr/local/bin
+
+  tasks:
+    - name: Install Development tools part 1/2
+      action: command yum -y groupinstall "Development tools"
+      tags: developmenttools
+
+    - name: Install Developtment tools part 2/2
+      action: yum pkg={{item}}
+      with_items:
+      - zlib-devel
+      - bzip2-devel
+      - openssl-devel
+      - ncurses-devel
+      - sqlite-devel
+      - readline-devel
+      - tk-devel
+      tags: developmenttools
+
+    - name: Install GCC
+      action: yum name=gcc
+      tags: python27
+
+    - name: Get Python 2.7.5
+      action: command wget http://www.python.org/ftp/python/2.7.5/Python-2.7.5.tgz
+      tags: python27
+
+    - name: Extract Python 2.7.5
+      action: command tar xvfz Python-2.7.5.tgz
+      tags: python27
+
+    - name: Change owner (for some reason it's set at user 1000. Weird)
+      action: command chown -R vagrant:vagrant Python-2.7.5
+      tags: python27
+
+    - name: Configure Python 2.7.5
+      action: command ./configure --prefix=/usr/local chdir=/home/vagrant/Python-2.7.5
+      tags: python27
+
+    - name: Prepare Python 2.7.5 Install
+      action: command make chdir=/home/vagrant/Python-2.7.5
+      tags: python27
+
+    - name: Install Python 2.7.5
+      action: command make altinstall chdir=/home/vagrant/Python-2.7.5
+      tags: python27
+
+    - name: Remove Python 2.7.5 downloadfile
+      action: command rm -rf /home/vagrant/Python-2.7.5*
+      tags: python27
+
+    - name: add {{python_path}} to path
+      lineinfile: dest=/home/vagrant/.bash_profile
+                  state=present
+                  backrefs=yes
+                  regexp='PATH=(["]*)((?!.*?{{python_path}}).*?)(["]*)$'
+                  line="PATH={{python_path}}:\1\2\3"
+      tags: python27
+
+    - name: Add Yum repository
+      action: copy src=../files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
+      tags: yum
+
+    - name: Update Yum
+      action: command yum -y update
+      sudo: True
+      tags: yumupdate
+
+    - name: Install MongoDB packages
+      action: yum pkg=$item state=latest
+      with_items:
+        - mongo-10gen
+        - mongo-10gen-server
+      tags: mongodb
+
+    - name: MongoDB | Push default configuration template
+      template:
+        src=../files/mongodb.conf.j2
+        dest=/etc/mongodb.conf
+        owner=root group=root mode=0644
+      notify:
+      - mongodb-restart
+
+    - name: Configure MongoDB
+      action: service name=mongod state=started enabled=yes
+      tags: mongodb
+
+    - name: Add EPEL as yum repository
+      action: copy src=../files/epel.repo dest=/etc/yum.repos.d/epel.repo
+      tags: epel
+
+    - name: Create the GPG key for EPEL
+      copy: src=../files/RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
+      tags: epel
+
+    - name: Download distribute
+      action: command wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.49.tar.gz --no-check-certificate
+      tags: distribute
+
+    - name: Extract distribute
+      action: command tar -xzvf distribute-0.6.49.tar.gz
+      tags: distribute
+
+    - name: Install distribute
+      action: command /usr/local/bin/python2.7 setup.py install chdir=/home/vagrant/distribute-0.6.49
+      tags: distribute
+
+    - name: Install Pip
+      action: command /usr/local/bin/easy_install-2.7 pip
+      tags: pipinstall
+
+    - name: Update dependancy
+      action: command /usr/local/bin/pip install --upgrade setuptools
+      tags: updatedistribute
+
+    - name: Install dependencies for python
+      action: yum pkg={{item}} state=latest
+      with_items:
+        - gcc-gfortran
+        - libgfortran
+        - lapack
+        - blas
+        - blas-devel
+        - lapack-devel
+        - python-devel
+      tags: pythondependancy
+
+    - name: Install dependancies
+      action: command /usr/local/bin/pip install {{item}}
+      with_items:
+        - numpy
+        - scipy
+        #- matplotlib
+        - ipython
+        - pandas
+        - sympy
+        - nose
+        - nltk
+        - multiprocessing
+      tags: dependancy
+
+    - name: Install CoilMQ
+      action: pip name=coilmq version=0.6.1
+      tags: coilmq
+
+    - name: Install GIT
+      action: yum name=git
+      tags: gitinstall
+
+    - name: Install Nyan Project
+      action: git repo=git://github.com/nederhrj/nyan.git dest=/home/nyan
+      tags: nyanproject
+
+    - name: Install Nyan Project Requirements
+      action: pip requirements=/home/nyan/requirements.txt
+      tags: nyanprojectrequirements
+
+  handlers:
+    - name: mongodb-restart
+      service: name=mongod state=restarted
+...
