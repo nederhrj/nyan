@@ -57,6 +57,10 @@
       action: command rm -rf /home/vagrant/Python-2.7.5*
       tags: python27
 
+    - name: Create symlink to python (from python-2.7)
+      file: src=/usr/local/bin/python2.7 dest=/usr/local/bin/python owner=root group=root state=link
+      tags: python27t
+
     - name: add {{python_path}} to path
       lineinfile: dest=/home/vagrant/.bash_profile
                   state=present
