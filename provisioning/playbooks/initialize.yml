@@ -134,8 +134,9 @@
       tags: pythondependancy
 
     - name: Install dependancies
-      action: command /usr/local/bin/pip install {{item}}
+      action: command /usr/local/bin/pip install {{item}} --upgrade
       with_items:
+        - setuptools
         - numpy
         - scipy
         #- matplotlib
@@ -145,23 +146,33 @@
         - nose
         - nltk
         - multiprocessing
-      tags: dependancy
+        - coilmq
+        - pyyaml
+        - gensim
+        - stomp.py
+        - scikit-learn
+        - flask
+        - flask-login
+        - mongoengine
+        - BeautifulSoup4
+        - pattern
+      tags: dependency
 
-    - name: Install CoilMQ
-      action: pip name=coilmq version=0.6.1
-      tags: coilmq
+    #- name: Install CoilMQ
+    #  action: pip name=coilmq version=0.6.1
+    #  tags: coilmq
 
     - name: Install GIT
       action: yum name=git
       tags: gitinstall
 
-    - name: Install Nyan Project
-      action: git repo=git://github.com/nederhrj/nyan.git dest=/home/nyan
-      tags: nyanproject
+    #- name: Install Nyan Project
+    #  action: git repo=git://github.com/nederhrj/nyan.git dest=/home/nyan
+    #  tags: nyanproject
 
-    - name: Install Nyan Project Requirements
-      action: pip requirements=/home/nyan/requirements.txt
-      tags: nyanprojectrequirements
+    #- name: Install Nyan Project Requirements
+    #  command: pip requirements=/home/nyan/requirements.txt
+    #  tags: nyanprojectrequirements
 
   handlers:
     - name: mongodb-restart
