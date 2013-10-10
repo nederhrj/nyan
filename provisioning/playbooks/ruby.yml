@@ -1,5 +1,5 @@
 ---
-- name: Python 2.7.5 Installation
+- name: Ruby Installation 1/3
   hosts: all
   user: vagrant
   sudo: True
@@ -8,28 +8,48 @@
     - rbenv_root: /usr/local/rbenv
     - ruby_version: 1.9.3-p385
 
+
+
   tasks:
+
+    - name: Add EPEL as yum repository
+      action: copy src=../files/epel.repo dest=/etc/yum.repos.d/epel.repo
+      tags: epel
+
+    - name: Create the GPG key for EPEL
+      copy: src=../files/RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
+      tags: epel
+
+
     - name: Install system dependencies for Ruby
-      action: yum pkg=={{item}} state=latest
+      action: yum pkg={{item}} state=latest
       with_items:
-        gcc-c++
-        patch
-        readline
-        readline-devel
-        zlib
-        zlib-devel
-        libyaml-devel
-        libffi-devel
-        openssl-devel
-        make
-        bzip2
-        autoconf
-        automake
-        libtool
-        bison
-        iconv-devel
-        git-core
+        - gcc-c++
+        - patch
+        - readline
+        - readline-devel
+        - zlib
+        - zlib-devel
+        - libyaml-devel
+        - libffi-devel
+        - openssl-devel
+        - make
+        - bzip2
+        - autoconf
+        - automake
+        - libtool
+        - bison
+        #- iconv-devel
+        - git-core
       tags: ruby
+
+
+- name: Ruby Installation 2/3
+  hosts: all
+  user: vagrant
+  sudo: False
+
+  tasks:
 
     - name: Getting Ruby Rbenv from GitHub
       action: git repo=git://github.com/sstephenson/rbenv.git dest=/home/vagrant/.rbenv
@@ -43,23 +63,37 @@
       lineinfile: dest=/home/vagrant/.bash_profile
                   state=present
                   regexp="^RUBY"
-                  line="export RUBY_CFLAGS="-march=native -O3 \nexport PATH=$HOME/.rbenv/bin:$PATH \neval \"$(rbenv init -)\""
+                  line={{item}}
+      with_items:
+        - 'export RUBY_CFLAGS="-march=native -O3"'
+        - 'export PATH=$HOME/.rbenv/bin:$PATH'
+        - 'eval "$(rbenv init -)"'
       tags: ruby
 
     - name: Installing Ruby 1.9.3-p392 via rbenv
-      action: command rbenv install 1.9.3-p392
+      action: command /home/vagrant/.rbenv/bin/rbenv install 1.9.3-p392
       tags: ruby
 
     - name: Making Ruby 1.9.3-p392 default
-      action: command rbenv global 1.9.3-p392
+      action: command /home/vagrant/.rbenv/bin/rbenv global 1.9.3-p392
       tags: ruby
 
     - name: Prevent gem from installing local documentation (saves time)
       lineinfile: dest=/home/vagrant/.gemrc
                   state=present
                   regex="^install"
-                  line="install: --no-ri --no-rdoc \nupdate:  --no-ri --no-rdoc"
+                  line={{item}}
+      with_items:
+        - 'install: --no-ri --no-rdoc'
+        - 'update:  --no-ri --no-rdoc'
       tags: ruby
+
+- name: Ruby Installation 3/3
+  hosts: all
+  user: vagrant
+  sudo: True
+
+  tasks:
 
     - name: Install Bundler
       gem: name=bundler state=present
