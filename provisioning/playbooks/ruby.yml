@@ -60,14 +60,11 @@
       tags: ruby
 
     - name: add Ruby environment variables to path
-      lineinfile: dest=/home/vagrant/.bash_profile
-                  state=present
-                  regexp="^RUBY"
-                  line={{item}}
+      action: lineinfile dest=/home/vagrant/.bash_profile regexp={{item}} line={{item}}
       with_items:
-        - 'export RUBY_CFLAGS="-march=native -O3"'
-        - 'export PATH=$HOME/.rbenv/bin:$PATH'
-        - 'eval "$(rbenv init -)"'
+        - "'export\ RUBY_CFLAGS=\"-march=native\ -O3\"'"
+        - export\ PATH=$HOME/.rbenv/bin:$PATH
+        - "'eval \"$(rbenv init -)\"'"
       tags: ruby
 
     - name: Installing Ruby 1.9.3-p392 via rbenv
