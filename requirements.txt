@@ -1,9 +1,9 @@
 pyyaml
-gensim
 numpy
 scipy
-stomp.py
 scikit-learn
+gensim
+stomp.py
 flask
 flask-login
 mongoengine

@@ -3,12 +3,11 @@
   hosts: all
   user: vagrant
   sudo: True
+  gather_facts: False
 
   vars:
     - rbenv_root: /usr/local/rbenv
     - ruby_version: 1.9.3-p385
-
-
 
   tasks:
 
@@ -68,7 +67,7 @@
       tags: ruby
 
     - name: Installing Ruby 1.9.3-p392 via rbenv
-      action: command /home/vagrant/.rbenv/bin/rbenv install 1.9.3-p392
+      action: command /home/vagrant/.rbenv/bin/rbenv install -f 1.9.3-p392
       tags: ruby
 
     - name: Making Ruby 1.9.3-p392 default
@@ -76,13 +75,9 @@
       tags: ruby
 
     - name: Prevent gem from installing local documentation (saves time)
-      lineinfile: dest=/home/vagrant/.gemrc
-                  state=present
-                  regex="^install"
-                  line={{item}}
-      with_items:
-        - 'install: --no-ri --no-rdoc'
-        - 'update:  --no-ri --no-rdoc'
+      copy:
+        src=../files/gemrc
+        dest=/home/vagrant/.gemrc
       tags: ruby
 
 - name: Ruby Installation 3/3
@@ -95,7 +90,7 @@
     - name: Install Bundler
       gem: name=bundler state=present
       tags: ruby
-
+...
 
 
 

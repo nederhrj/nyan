@@ -2,20 +2,38 @@
 - name: Configure the mongodb instance
   hosts: all
   user: vagrant
-  gather_facts: true
+  sudo: True
+  gather_facts: False
 
   tasks:
-    - name: Check NTP
-      action: service name=ntpd state=started
-
-    - name: Copy MongoDB repo file
+    - name: Add Yum repository
       action: copy src=../files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
+      tags: yum
 
-    - name: Install packages
+#    - name: Update Yum
+#      action: command yum -y update
+#      tags: yumupdate
+
+    - name: Install MongoDB packages
       action: yum pkg=$item state=latest
       with_items:
         - mongo-10gen
         - mongo-10gen-server
+      tags: mongodb
+
+    - name: MongoDB | Push default configuration template
+      template:
+        src=../files/mongodb.conf.j2
+        dest=/etc/mongodb.conf
+        owner=root group=root mode=0644
+      notify:
+      - mongodb-restart
 
     - name: Configure MongoDB
       action: service name=mongod state=started enabled=yes
+      tags: mongodb
+
+  handlers:
+    - name: mongodb-restart
+      service: name=mongod state=restarted
+...
