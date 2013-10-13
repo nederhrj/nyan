@@ -53,6 +53,9 @@ Prerequisites: [VirtualBox](http://www.virtualbox.org) and [Vagrant](www.vagrant
 -- pip install coilmq  # message broker
 -- pip install -r requirements.txt  ## Install all Python requirements
 -- bundle install  # Install all necessary Ruby gems
+
+Start the message broker:
+
 -- start CoilMQ: "coilmq &"
 
 Crawl some rss feeds:
@@ -62,6 +65,11 @@ Crawl some rss feeds:
 Start the frontend:
 
 -- "python frontend/frontend.py". You can access the login page at [http://127.0.0.1:5001](http://127.0.0.1:5001)
+
+Start the feature extractor as daemon: (NOT TESTED)
+
+-- "python nyan/feature_extractor/main.py start --config ../../config.yaml --log test.log -d"
+
 
 
 Dependencies and Requirements
