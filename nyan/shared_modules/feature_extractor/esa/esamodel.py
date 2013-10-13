@@ -34,12 +34,14 @@ to reduce the number of concepts. If the number of clusters is the same as the
 number of concepts the implementation is true to the paper.
 """
 
+from collections import defaultdict
 import logging
-
-import numpy
-from gensim import interfaces, matutils, utils
-
+import itertools
 from nyan.shared_modules.kmedoids import KMedoids
+import math
+import numpy
+
+from gensim import interfaces, matutils, utils, similarities
 
 
 logger = logging.getLogger('gensim.models.esamodel')

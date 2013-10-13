@@ -39,6 +39,8 @@ from nyan.shared_modules.feature_extractor.esa.esamodel import EsaModel
 from nyan.shared_modules.feature_extractor.esa.cosine_esamodel import CosineEsaModel
 
 
+
+
 logger = logging.getLogger("extractor")
 
 
