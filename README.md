@@ -59,9 +59,9 @@ Crawl some rss feeds:
 
 -- bin/feed_crawler/feed_crawler.rb -l crawl.log -c bin/feed_crawler/feed-crawler-config.yaml -s bin/feed_crawler/feed_state.yaml
 
-Start the crawler:
+Start the frontend:
 
---
+-- "python frontend/frontend.py". You can access the login page at [http://127.0.0.1:5001](http://127.0.0.1:5001)
 
 
 Dependencies and Requirements

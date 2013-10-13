@@ -11,6 +11,10 @@
       notify:
       - restart ntpd
 
+    - name: Machine | Disable firewall (fixme)
+      service: name=iptables state=stopped enabled=false
+      tags: firewall
+
   handlers:
     - name: restart ntpd
       service: name=ntpd state=restarted
