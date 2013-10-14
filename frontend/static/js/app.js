@@ -7,7 +7,7 @@ function display_alert(type, message){
 function handle(event){
     var btn = $(event.target)
     if(btn.attr('data-subscripe-vendor') != undefined) {
-        $.post($SCRIPT_ROOT + "/ajax_subscripe", 
+        $.post($SCRIPT_ROOT + "/ajax_subscribe",
             {vendor_id : btn.attr('data-subscripe-vendor')})
     }
     else if(btn.attr('data-unsubscripe-vendor') != undefined) {

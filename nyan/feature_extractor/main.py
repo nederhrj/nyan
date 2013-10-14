@@ -120,12 +120,12 @@ class FeatureExtractorDaemon(Daemon):
         trys = 5
         while not connected:
             try:
-                trys -= 1
+                trys =- 1
 
                 listener = StompListener(self.config_)
 
-                conn = stomp.Connection()
-                conn.set_listener('', listener)
+                conn = stomp.Connection(hosts)
+                conn.set_listener('', listener())
                 conn.start()
                 conn.connect()
 

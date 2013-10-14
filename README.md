@@ -38,6 +38,40 @@ Some can be run a a daemon without daemontools. However, I don't recommend that.
 
 For model training see shared_models/learn_on_articles.
 
+Testing using Vagrant
+=====================
+
+Prerequisites: [VirtualBox](http://www.virtualbox.org) and [Vagrant](www.vagrantup.com)
+
+- Add a Centos box: "vagrant box add 'Centos 6.4 x32' http://developer.nrel.gov/downloads/vagrant-boxes/CentOS-6.4-i386-v20130731.box"
+
+- Go to the directory where you've pulled the sources. Start a new virtualbox using "vagrant up". This will automatically create a Centos 6.4 installation with all dependencies.
+
+- Open a shell to your new Centos box ("vagrant ssh"):
+
+-- cd /vagrant
+-- pip install coilmq  # message broker
+-- pip install -r requirements.txt  ## Install all Python requirements
+-- bundle install  # Install all necessary Ruby gems
+
+Start the message broker:
+
+-- start CoilMQ: "coilmq &"
+
+Crawl some rss feeds:
+
+-- bin/feed_crawler/feed_crawler.rb -l crawl.log -c bin/feed_crawler/feed-crawler-config.yaml -s bin/feed_crawler/feed_state.yaml
+
+Start the frontend:
+
+-- "python frontend/frontend.py". You can access the login page at [http://127.0.0.1:5001](http://127.0.0.1:5001)
+
+Start the feature extractor as daemon: (NOT TESTED)
+
+-- "python nyan/feature_extractor/main.py start --config ../../config.yaml --log test.log -d"
+
+
+
 Dependencies and Requirements
 =============================
 

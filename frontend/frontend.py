@@ -322,8 +322,8 @@ def ajax_change_password():
     return ""
 
 
-@app.route('/ajax_subscripe', methods=['POST'])
-def ajax_subscripe():
+@app.route('/ajax_subscribe', methods=['POST'])
+def ajax_subscribe():
     """
     Called remotely to subscribe current user to a vendor
     """
@@ -418,4 +418,4 @@ def ajax_add_user():
 
 #Start app
 if __name__ == '__main__':
-    app.run()        
+    app.run(host='0.0.0.0')

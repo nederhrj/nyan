@@ -3,12 +3,11 @@
   hosts: all
   user: vagrant
   sudo: True
+  gather_facts: False
 
   vars:
-    - rbenv_root: /usr/local/rbenv
+    - rbenv_root: /home/vagrant/.rbenv/bin
     - ruby_version: 1.9.3-p385
-
-
 
   tasks:
 
@@ -41,6 +40,7 @@
         - bison
         #- iconv-devel
         - git-core
+        - curl-devel
       tags: ruby
 
 
@@ -52,15 +52,15 @@
   tasks:
 
     - name: Getting Ruby Rbenv from GitHub
-      action: git repo=git://github.com/sstephenson/rbenv.git dest=/home/vagrant/.rbenv
+      git: repo=git://github.com/sstephenson/rbenv.git dest=/home/vagrant/.rbenv
       tags: ruby
 
     - name: Getting Ruby Plugins from Github
-      action: git repo=git://github.com/sstephenson/ruby-build.git dest=/home/vagrant/.rbenv/plugins/ruby-build
+      git: repo=git://github.com/sstephenson/ruby-build.git dest=/home/vagrant/.rbenv/plugins/ruby-build
       tags: ruby
 
     - name: add Ruby environment variables to path
-      action: lineinfile dest=/home/vagrant/.bash_profile regexp={{item}} line={{item}}
+      lineinfile: dest=/home/vagrant/.bash_profile regexp={{item}} line={{item}}
       with_items:
         - "'export\ RUBY_CFLAGS=\"-march=native\ -O3\"'"
         - export\ PATH=$HOME/.rbenv/bin:$PATH
@@ -68,36 +68,24 @@
       tags: ruby
 
     - name: Installing Ruby 1.9.3-p392 via rbenv
-      action: command /home/vagrant/.rbenv/bin/rbenv install 1.9.3-p392
+      command: /home/vagrant/.rbenv/bin/rbenv install -f 1.9.3-p392
       tags: ruby
 
     - name: Making Ruby 1.9.3-p392 default
-      action: command /home/vagrant/.rbenv/bin/rbenv global 1.9.3-p392
+      command: /home/vagrant/.rbenv/bin/rbenv global 1.9.3-p392
       tags: ruby
 
     - name: Prevent gem from installing local documentation (saves time)
-      lineinfile: dest=/home/vagrant/.gemrc
-                  state=present
-                  regex="^install"
-                  line={{item}}
-      with_items:
-        - 'install: --no-ri --no-rdoc'
-        - 'update:  --no-ri --no-rdoc'
+      copy:
+        src=../files/gemrc
+        dest=/home/vagrant/.gemrc
       tags: ruby
-
-- name: Ruby Installation 3/3
-  hosts: all
-  user: vagrant
-  sudo: True
-
-  tasks:
 
     - name: Install Bundler
       gem: name=bundler state=present
       tags: ruby
 
-
-
-
-
-
+    - name: rbenv | rehash
+      command: /home/vagrant/.rbenv/bin/rbenv rehash
+      tags: ruby
+...

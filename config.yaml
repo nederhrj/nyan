@@ -7,7 +7,7 @@
     db-name: ""
     port: 27017
   #prefix for tfidf, lda and esa model
-  prefix: "vagrant/data/wiki"
+  prefix: "/vagrant/data/wiki"
   #minimum rating for top-news
   rating: 0.1
   #config for flask
@@ -15,5 +15,5 @@
     secret_key: "very secret"
     debug: True
 
-  directory: ../data/wiki_wordids.dict
+  dictionary: /vagrant/data/wiki_wordids.dict
 ...

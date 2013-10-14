@@ -1,54 +1,127 @@
 ---
-- name: Python 2.7.5 Installation
+- name: Python 2.7.5 Installation 1/2
   hosts: all
   user: vagrant
   sudo: True
+  gather_facts: False
+
+  vars:
+    python_version: 2.7.5
+    python_path: /usr/local/bin
+
+  tasks:
+    - name: Install Development tools part 1/2
+      action: command yum -y groupinstall "Development tools"
+      tags: developmenttools
+
+    - name: Install Developtment tools part 2/2
+      action: yum pkg={{item}}
+      with_items:
+      - zlib-devel
+      - bzip2-devel
+      - openssl-devel
+      - ncurses-devel
+      - sqlite-devel
+      - readline-devel
+      - tk-devel
+      tags: developmenttools
+
+    - name: Get Python 2.7.5
+      action: command wget http://www.python.org/ftp/python/{{python_version}}/Python-{{python_version}}.tgz
+      tags: python27
+
+    - name: Extract Python 2.7.5
+      action: command tar xvfz Python-{{python_version}}.tgz
+      tags: python27
+
+    - name: Change owner (for some reason it's set at user 1000. Weird)
+      action: command chown -R vagrant:vagrant Python-{{python_version}}
+      tags: python27
+
+    - name: Configure Python 2.7.5
+      action: command ./configure chdir=/home/vagrant/Python-{{python_version}}
+      tags: python27
+
+    - name: Prepare Python 2.7.5 Install
+      action: command make chdir=/home/vagrant/Python-{{python_version}}
+      tags: python27
+
+    - name: Install Python 2.7.5
+      action: command make altinstall chdir=/home/vagrant/Python-{{python_version}}
+      tags: python27
+
+    - name: Link python 2.7 to python
+      action: command ln -sf /usr/local/bin/python2.7 {{python_path}}/python
+      tags: python27
+
+    - name: Remove downloadfile
+      action: command rm -rf /home/vagrant/Python-{{python_version}}*
+      tags: python27
+
+    - name: Create symlink to python (from python-2.7)
+      file: src={{python_path}}/python2.7 dest={{python_path}}/python owner=root group=root state=link
+      tags: python27
+
+- name: Python 2.7.5 Installation 2/2
+  hosts: all
+  user: vagrant
+  gather_facts: False
 
   vars:
     python_path: /usr/local/bin
 
   tasks:
-    - name: Install GCC
-      action: yum name=gcc
-      tags: python27
-
-    - name: Get Python 2.7.5
-      action: command wget http://www.python.org/ftp/python/2.7.5/Python-2.7.5.tgz
-      tags: python27
-
-    - name: Extract Python 2.7.5
-      action: command tar xvfz Python-2.7.5.tgz
-      tags: python27
-
-    - name: Change owner (for some reason it's set at user 1000. Weird)
-      action: command chown -R vagrant:vagrant Python-2.7.5
-      tags: python27
-
-    - name: Configure Python 2.7.5
-      action: command ./configure chdir=/home/vagrant/Python-2.7.5
-      tags: python27
-
-    - name: Prepare Python 2.7.5 Install
-      action: command make chdir=/home/vagrant/Python-2.7.5
-      tags: python27
-
-    - name: Install Python 2.7.5
-      action: command make altinstall chdir=/home/vagrant/Python-2.7.5
-      tags: python27
-
-    - name: Link python 2.7 to python
-      action: command ln -sf /usr/local/bin/python2.7 /usr/local/bin/python
-      tags: python27
-
-    - name: Remove downloadfile
-      action: command rm -rf /home/vagrant/Python-2.7.5*
-      tags: python27
-
     - name: add {{python_path}} to path
       lineinfile: dest=/home/vagrant/.bash_profile
-                  state=present
-                  backrefs=yes
-                  regexp='PATH=(["]*)((?!.*?{{python_path}}).*?)(["]*)$'
-                  line="PATH={{python_path}}:\1\2\3"
+                state=present
+                backrefs=yes
+                regexp='PATH=(["]*)((?!.*?{{python_path}}).*?)(["]*)$'
+                line="PATH={{python_path}}:\1\2\3"
       tags: python27
-...
+
+- name: Install Python PIP & dependencies
+  hosts: all
+  user: vagrant
+  sudo: True
+  gather_facts: False
+
+  tasks:
+    - name: Add EPEL as yum repository
+      copy: src=../files/epel.repo dest=/etc/yum.repos.d/epel.repo
+      tags: epel
+
+    - name: Create the GPG key for EPEL
+      copy: src=../files/RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
+      tags: epel
+
+    - name: Download distribute
+      command: wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.49.tar.gz --no-check-certificate
+      tags: distribute
+
+    - name: Extract distribute
+      command: tar -xzvf distribute-0.6.49.tar.gz
+      tags: distribute
+
+    - name: Install distribute
+      command: /usr/local/bin/python2.7 setup.py install chdir=/home/vagrant/distribute-0.6.49
+      tags: distribute
+
+    - name: Install Pip
+      command: /usr/local/bin/easy_install-2.7 pip
+      tags: pipinstall
+
+    - name: Update dependancy
+      command: /usr/local/bin/pip install --upgrade setuptools
+      tags: updatedistribute
+
+    - name: Install dependencies for scientific python
+      yum: pkg={{item}} state=latest
+      with_items:
+        - gcc-gfortran
+        - libgfortran
+        - lapack
+        - blas
+        - blas-devel
+        - lapack-devel
+        - python-devel
+      tags: pythondependancy

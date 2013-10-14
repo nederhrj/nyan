@@ -3,7 +3,6 @@
   name: Configure packages
   user: vagrant
   sudo: True
-  gather_facts: true
 
   vars:
       python_path: /usr/local/bin
@@ -24,10 +23,6 @@
       - readline-devel
       - tk-devel
       tags: developmenttools
-
-    - name: Install GCC
-      action: yum name=gcc
-      tags: python27
 
     - name: Get Python 2.7.5
       action: command wget http://www.python.org/ftp/python/2.7.5/Python-2.7.5.tgz
@@ -60,6 +55,14 @@
     - name: Create symlink to python (from python-2.7)
       file: src=/usr/local/bin/python2.7 dest=/usr/local/bin/python owner=root group=root state=link
       tags: python27t
+
+- hosts: all
+  name: Configure packages
+  user: vagrant
+  sudo: True
+
+  vars:
+      python_path: /usr/local/bin
 
     - name: add {{python_path}} to path
       lineinfile: dest=/home/vagrant/.bash_profile

@@ -6,3 +6,4 @@ gem 'psych'
 gem 'dbi'
 gem 'stomp'
 gem 'sqlite3'
+
