@@ -114,13 +114,13 @@ class FeatureExtractorDaemon(Daemon):
             logger.error("No config.")
             sys.exit(1)
 
-        hosts = [('localhost', 61613)]
+        hosts = [('localhost', 61614)]
 
         connected = False
         trys = 5
         while not connected:
             try:
-                trys =- 1
+                trys -= 1
 
                 listener = StompListener(self.config_)
 
