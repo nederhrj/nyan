@@ -89,20 +89,4 @@
     - name: rbenv | rehash
       command: /home/vagrant/.rbenv/bin/rbenv rehash
       tags: ruby
-
-- name: Ruby Installation 3/3
-  hosts: all
-  user: vagrant
-  sudo: True
-  gather_facts: False
-
-  tasks:
-
-    - name: add Ruby environment variables to path for root user
-      lineinfile: dest=/root/.bash_profile regexp={{item}} line={{item}}
-      with_items:
-        - "'export\ RUBY_CFLAGS=\"-march=native\ -O3\"'"
-        - export\ PATH=/home/vagrant/.rbenv/bin:$PATH
-        - "'eval \"$(rbenv init -)\"'"
-      tags: rubyt
 ...
