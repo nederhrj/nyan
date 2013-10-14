@@ -22,7 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
 
       nyan.vm.network :forwarded_port, guest: 5000, host: 5001
-      nyan.vm.network :forwarded_port, guest: 80, host: 8000
+      nyan.vm.network :forwarded_port, guest: 61613, host: 61614
       #nyan.vm.network :private_network, ip: "192.168.33.10"
       # config.vm.network :private_network, ip: "192.168.33.10"
       # config.vm.network :public_network

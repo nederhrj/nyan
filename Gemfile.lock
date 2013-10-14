@@ -40,7 +40,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  curb
   dbi
   feedzirra
   log4r
