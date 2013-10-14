@@ -81,11 +81,11 @@
         dest=/home/vagrant/.gemrc
       tags: ruby
 
-    - name: Install Bundler
-      gem: name=bundler state=present
-      tags: ruby
+    - name: install Bundler
+      command: /home/vagrant/.rbenv/shims/gem install bundler
+      tags: ruby1
 
     - name: rbenv | rehash
       command: /home/vagrant/.rbenv/bin/rbenv rehash
-      tags: ruby
+      tags: ruby2
 ...

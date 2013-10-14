@@ -3,7 +3,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-    config.vm.provision "shell", inline: "Starting Nyan Vagrant Test Environment"
+    config.vm.provision "shell", inline: "echo 'Starting Nyan Vagrant Test Environment'"
     config.vm.box = "Centos 6.4 x32"
     config.vm.box_url = "http://developer.nrel.gov/downloads/vagrant-boxes/CentOS-6.4-i386-v20130731.box"
 
