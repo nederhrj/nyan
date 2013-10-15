@@ -50,9 +50,11 @@ Prerequisites: [VirtualBox](http://www.virtualbox.org) and [Vagrant](www.vagrant
 - Open a shell to your new Centos box ("vagrant ssh"):
 
 -- cd /vagrant
--- pip install coilmq  # message broker
--- pip install -r requirements.txt  ## Install all Python requirements
+-- sudo pip /usr/local/bin/install coilmq  # message broker
+-- sudo pip /usr/local/bin/install numpy  # This needs to be before the requirements.txt install. Don't know why
+-- sudo pip /usr/local/bin/install -r requirements.txt  # Install all Python requirements
 -- bundle install  # Install all necessary Ruby gems
+-- sudo /usr/local/bin/python setup.py install
 
 Start the message broker:
 
@@ -66,9 +68,9 @@ Start the frontend:
 
 -- "python frontend/frontend.py". You can access the login page at [http://127.0.0.1:5001](http://127.0.0.1:5001)
 
-Start the feature extractor as daemon: (NOT TESTED)
+Start the feature extractor as daemon:
 
--- "python nyan/feature_extractor/main.py start --config ../../config.yaml --log test.log -d"
+-- "python nyan/feature_extractor/main.py start --config config.yaml --log test.log"
 
 
 

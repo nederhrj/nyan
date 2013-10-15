@@ -1,6 +1,6 @@
-pyyaml
 numpy
 scipy
+pyyaml
 scikit-learn
 gensim
 stomp.py

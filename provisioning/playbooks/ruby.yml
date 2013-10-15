@@ -7,7 +7,7 @@
 
   vars:
     - rbenv_root: /home/vagrant/.rbenv/bin
-    - ruby_version: 1.9.3-p385
+    - ruby_version: 1.9.3-p392
 
   tasks:
 
@@ -48,6 +48,7 @@
   hosts: all
   user: vagrant
   sudo: False
+  gather_facts: False
 
   tasks:
 
@@ -81,11 +82,11 @@
         dest=/home/vagrant/.gemrc
       tags: ruby
 
-    - name: install Bundler
-      command: /home/vagrant/.rbenv/shims/gem install bundler
-      tags: ruby1
+    - name: Install Bundler
+      gem: name=bundler state=present
+      tags: ruby
 
     - name: rbenv | rehash
       command: /home/vagrant/.rbenv/bin/rbenv rehash
-      tags: ruby2
+      tags: ruby
 ...

@@ -125,3 +125,21 @@
         - lapack-devel
         - python-devel
       tags: pythondependancy
+
+- name: Python 2.7.5 Installation 3/3
+  hosts: all
+  user: vagrant
+  gather_facts: False
+  sudo: True
+
+  vars:
+    python_path: /usr/local/bin
+
+  tasks:
+    - name: add {{python_path}} to path
+      lineinfile: dest=/root/.bash_profile
+                state=present
+                backrefs=yes
+                regexp='PATH=(["]*)((?!.*?{{python_path}}).*?)(["]*)$'
+                line="PATH={{python_path}}:\1\2\3"
+      tags: python27

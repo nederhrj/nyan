@@ -38,9 +38,6 @@ from gensim import corpora, models, utils
 from nyan.shared_modules.feature_extractor.esa.esamodel import EsaModel
 from nyan.shared_modules.feature_extractor.esa.cosine_esamodel import CosineEsaModel
 
-
-
-
 logger = logging.getLogger("extractor")
 
 
@@ -48,6 +45,9 @@ class Extractor:
     """
     Extractor interface
     """
+
+    def __init__(self):
+        pass
 
     def get_features(self, document):
         logger.debug("get_features not implemented!")
@@ -163,8 +163,7 @@ class EsaFeatureExtractor(Extractor):
         """
         prefix is the prefix path to tfidf, lda and esa model.
         """
-        logger.info("Load dictionary, tfidf model, lda model and esa model with prefix %s"
-                    % prefix)
+        logger.info("Load dictionary, tfidf model, lda model and esa model with prefix %s" % prefix)
         self.dictionary = corpora.Dictionary.load(prefix + "_wordids.dict")
         self.tfidf_model = models.TfidfModel.load(prefix + "_tfidf.model")
         self.lda_model = models.LdaModel.load(prefix + "_lda.model")
