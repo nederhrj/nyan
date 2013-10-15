@@ -37,8 +37,8 @@ from gensim import corpora, models, utils
 
 #from nyan.shared_modules.feature_extractor.esa.esamodel import EsaModel
 #from nyan.shared_modules.feature_extractor.esa.cosine_esamodel import CosineEsaModel
-from esa.esamodel import EsaModel
-from esa.cosine_esamodel import CosineEsaModel
+from esamodel import EsaModel
+from cosine_esamodel import CosineEsaModel
 
 logger = logging.getLogger("extractor")
 

@@ -24,7 +24,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor
+from extractors import EsaFeatureExtractor
 import json
 import logging
 import socket
@@ -125,7 +125,7 @@ class FeatureExtractorDaemon(Daemon):
                 listener = StompListener(self.config_)
 
                 conn = stomp.Connection(hosts)
-                conn.set_listener('', listener())
+                conn.set_listener('', listener)
                 conn.start()
                 conn.connect()
 
