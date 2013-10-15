@@ -36,7 +36,7 @@ import sys
 
 from gensim import utils, corpora, models
 
-from esamodel import EsaModel
+from gensim.models.esamodel import EsaModel
 
 
 if __name__ == "__main__":
