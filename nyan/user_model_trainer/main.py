@@ -29,7 +29,8 @@ import sys
 
 from mongoengine import *
 
-from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor
+from extractors import EsaFeatureExtractor
+#from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor
 from nyan.shared_modules.models.mongodb_models import User
 from nyan.shared_modules.user_models import UserModelCentroid
 from nyan.shared_modules.utils.helper import load_config
