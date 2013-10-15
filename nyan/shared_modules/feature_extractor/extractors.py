@@ -35,8 +35,10 @@ import logging
 
 from gensim import corpora, models, utils
 
-from nyan.shared_modules.feature_extractor.esa.esamodel import EsaModel
-from nyan.shared_modules.feature_extractor.esa.cosine_esamodel import CosineEsaModel
+#from nyan.shared_modules.feature_extractor.esa.esamodel import EsaModel
+#from nyan.shared_modules.feature_extractor.esa.cosine_esamodel import CosineEsaModel
+#from gensim.models.esamodel import EsaModel
+#from gensim.models.cosine_esamodel import CosineEsaModel
 
 logger = logging.getLogger("extractor")
 
@@ -167,7 +169,7 @@ class EsaFeatureExtractor(Extractor):
         self.dictionary = corpora.Dictionary.load(prefix + "_wordids.dict")
         self.tfidf_model = models.TfidfModel.load(prefix + "_tfidf.model")
         self.lda_model = models.LdaModel.load(prefix + "_lda.model")
-        self.esa_model = EsaModel.load(prefix + "_esa_on_lda.model")
+        self.esa_model = models.EsaModel.load(prefix + "_esa_on_lda.model")
 
     def get_features(self, document):
         #create list of tokens from doc
