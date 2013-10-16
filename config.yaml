@@ -4,7 +4,7 @@
     host: "localhost"
     user: "root"
     passwd: ""
-    db-name: ""
+    db-name: "nyan_test"
     port: 27017
   #prefix for tfidf, lda and esa model
   prefix: "/vagrant/data/wiki"

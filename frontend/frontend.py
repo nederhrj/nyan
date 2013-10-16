@@ -376,7 +376,7 @@ def ajax_add_user():
     new_password = request.form['new_password']
     new_password_repeat = request.form['new_password_repeat']
 
-    if current_user.mongodb_user.email != "jeskar@web.de":
+    if current_user.mongodb_user.email != "test@testmail.com":
         abort(403)
 
     #check passwords

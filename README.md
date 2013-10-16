@@ -70,7 +70,7 @@ Start the frontend:
 
 Start the feature extractor as daemon:
 
--- "python nyan/feature_extractor/main.py start --config config.yaml --log test.log"
+-- "python nyan/feature_extractor/main.py start --config config.yaml --log test.log -d"
 
 
 

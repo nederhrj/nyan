@@ -33,8 +33,9 @@ with data for testing.
 
 from datetime import datetime
 import logging
-from models.mongodb_models import *
 from mongoengine import *
+from nyan.shared_modules.models.mongodb_models import *
+
 
 def clear_database():
     Vendor.objects().delete()
@@ -124,9 +125,9 @@ def fill_database():
     article3.save()
     
     #add user
-    user = User(name = u"Karsten Jeschkies", 
-                password = u"88360b44f9cfc611dbb93f43770c54c56619677fc59dbfb45bb90dac004427f3",
-                email = u"jeskar@web.de")
+    user = User(name = u"Ronald Kok",
+                password = u"03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+                email = u"test@testmail.com")
     
     #add subscription
     user.subscriptions.append(vendor)

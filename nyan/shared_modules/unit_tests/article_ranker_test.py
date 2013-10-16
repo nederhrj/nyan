@@ -27,14 +27,14 @@ Created on 20.09.2012
 
 @author: karsten jeschkies <jeskar@web.de>
 '''
-from article_ranker import ArticleRanker 
+from nyan.article_ranker.article_ranker import ArticleRanker
 from nyan.feature_extractor.extractors import EsaFeatureExtractor
 from FillTestDatabase import fill_database, clear_database
 import logging
-from models.mongodb_models import *
 from mongoengine import *
+from nyan.shared_modules.models.mongodb_models import *
 import unittest
-from utils.helper import load_config
+from nyan.shared_modules.utils.helper import load_config
 
 logger = logging.getLogger("unittesting")
 

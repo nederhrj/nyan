@@ -1,40 +1,38 @@
 ---
 techcrunch:
-  last_entry: !binary |-
-    aHR0cDovL3RlY2hjcnVuY2guY29tLzIwMTMvMTAvMTQvam9iLW91dHNvdXJj
-    aW5nLW1hcmtldHBsYWNlLWZyZWVsYW5jZXItY29tLWZpbGVzLWZvci0xNC0y
-    bS1pcG8v
+  last_entry: ''
 allthingsd:
   last_entry: !binary |-
-    aHR0cDovL2FsbHRoaW5nc2QuY29tLzIwMTMxMDEzL2ZhY2Vib29rLWFjcXVp
-    cmVzLWlzcmFlbGktbW9iaWxlLWRhdGEtbWFuYWdlbWVudC1zdGFydHVwLW9u
-    YXZvLw==
+    aHR0cDovL2FsbHRoaW5nc2QuY29tLzIwMTMxMDE1LzIxLXJlYXNvbnMtbGlz
+    dGljbGVzLWFyZS1oZXJlLXRvLXN0YXkv
 allfacebook:
   last_entry: !binary |-
-    aHR0cDovL2FsbGZhY2Vib29rLmNvbS9kbWEtMjAxM19iMTI1OTIw
+    aHR0cDovL2FsbGZhY2Vib29rLmNvbS9hcmNhZGUtZmlyZS1tdHYtaWdneS1p
+    bnRlbC10aGUtbXVzaWMtZXhwZXJpbWVudC0yMF9iMTI1OTk3
 androidandme:
   last_entry: !binary |-
-    aHR0cDovL2FuZHJvaWRhbmRtZS5jb20vMjAxMy8xMC9uZXdzL2h0Yy1hbmRy
-    b2lkLTQtMy11cGRhdGUtY29taW5nLXRvLXQtbW9iaWxlLWh0Yy1vbmUtYnkt
-    bWlkLW5leHQtd2Vlay8/dXRtX3NvdXJjZT1yc3MmdXRtX21lZGl1bT1yc3Mm
-    dXRtX2NhbXBhaWduPWh0Yy1hbmRyb2lkLTQtMy11cGRhdGUtY29taW5nLXRv
-    LXQtbW9iaWxlLWh0Yy1vbmUtYnktbWlkLW5leHQtd2Vlaw==
+    aHR0cDovL2FuZHJvaWRhbmRtZS5jb20vMjAxMy8xMC9uZXdzL3VubG9ja2Vk
+    LXNvbnkteHBlcmlhLXoxLWFuZC16LXVsdHJhLW5vdy1hdmFpbGFibGUtaW4t
+    dGhlLXVzLXNtYXJ0d2F0Y2gtMi1jb21pbmctc29vbi8/dXRtX3NvdXJjZT1y
+    c3MmdXRtX21lZGl1bT1yc3MmdXRtX2NhbXBhaWduPXVubG9ja2VkLXNvbnkt
+    eHBlcmlhLXoxLWFuZC16LXVsdHJhLW5vdy1hdmFpbGFibGUtaW4tdGhlLXVz
+    LXNtYXJ0d2F0Y2gtMi1jb21pbmctc29vbg==
 anandtech:
   last_entry: !binary |-
     aHR0cDovL2FuYW5kdGVjaC5mZWVkc3BvcnRhbC5jb20vYy8zNDY1My9mLzYz
-    NTIwMy9zLzMyNjFiNjgxL3NjLzE1L2wvMEwwU2FuYW5kdGVjaDBOMENzaG93
-    MEM3NDE0MEN2YWx2ZTBFdmlkZW8wRWRlbW8wRW9mMEVzdGVhbTBFY29udHJv
-    bGxlci9zdG9yeTAxLmh0bQ==
+    NTIwMy9zLzMyODIzMGQ2L3NjLzUvbC8wTDBTYW5hbmR0ZWNoME4wQ3Nob3cw
+    Qzc0MTcwQ3NvbnkwRXZhaW8wRXBybzBFMTMwRWV4Y2VwdGlvbmFsbHkwRXBv
+    cnRhYmxlL3N0b3J5MDEuaHRt
 boingboing:
   last_entry: !binary |-
     aHR0cDovL3Jzcy5mZWVkc3BvcnRhbC5jb20vYy8zNTIwOC9mLzY1Mzk2NS9z
-    LzMyNmJiNmU0L3NjLzIxL2wvMExib2luZ2JvaW5nMEJuZXQwQzIwQTEzMEMx
-    MEEwQzEzMENpY2VsYW5kczBFYm9vazBFYm9vbTBCaHRtbC9zdG9yeTAxLmh0
-    bQ==
+    LzMyODFiZjRhL3NjLzEwL2wvMExib2luZ2JvaW5nMEJuZXQwQzIwQTEzMEMx
+    MEEwQzE1MEN0aGUwRXJlYWwwRXJlYXNvbjBFdGhlMEVmbG9yaWRhMEVoYTBC
+    aHRtbC9zdG9yeTAxLmh0bQ==
 bgr:
   last_entry: !binary |-
-    aHR0cDovL2Jnci5jb20vMjAxMy8xMC8xMS9ncmFuZC10aGVmdC1hdXRvLXYt
-    cGMtcmVsZWFzZS1kYXRlLw==
+    aHR0cDovL2Jnci5jb20vMjAxMy8xMC8xNS9wYW5kb3JhLXZzLWl0dW5lcy1y
+    YWRpby1pbnRlcnZpZXcv
 engadget:
   last_entry: !binary |-
     aHR0cDovL3d3dy5lbmdhZGdldC5jb20v
