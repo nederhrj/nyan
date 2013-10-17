@@ -30,7 +30,7 @@ def firstparagraph(value):
     return " ".join(sentences[0:2])
 
 
-#jinja2 filter to get pervious day of datetime
+#jinja2 filter to get previous day of datetime
 def prevdate(value):
     d = value - timedelta(days=1)
     return d

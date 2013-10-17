@@ -21,6 +21,8 @@ import jinja2_filters
 from nyan.shared_modules.models.mongodb_models import (Vendor, User, Article, UserModel, ReadArticleFeedback)
 from nyan.shared_modules.utils.helper import load_config
 
+from flask_debugtoolbar import DebugToolbarExtension
+
 
 #Configure logger
 logging.basicConfig(format='-' * 80 + '\n' +
@@ -46,6 +48,9 @@ try:
 except KeyError as e:
     app.logger.error("Malformed config." + "Could not get flask secret key and debug option: %s" % (e))
     sys.exit(1)
+
+# For debugging
+toolbar = DebugToolbarExtension(app)
 
 app.config.from_object(__name__)
 

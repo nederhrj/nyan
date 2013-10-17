@@ -11,3 +11,4 @@ nltk
 BeautifulSoup4
 pattern
 multiprocessing
+flask-debugtoolbar

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,48 +20,49 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
-'''
+"""
 Created on 06.09.2012
 
 @author: karsten jeschkies <jeskar@web.de>
-'''
+"""
 
 from datetime import datetime
 import logging
-from models.mongodb_models import *
+
 from mongoengine import *
+from nyan.shared_modules.models.mongodb_models import *
+
 import time
 import unittest
 
 logger = logging.getLogger("unittesting")
 
 #Connect to test database
-connect("nyan_test", port = 20545)
+connect("nyan_test", port=20545)
+
 
 class UserFetchCase(unittest.TestCase):
 
     def setUp(self):
-        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', 
-                        level=logging.DEBUG)
+        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
         
         #Fill Database
         #If adding works is checked in tests
         
         #add user
-        karsten = User(name = "Karsten Jeschkies", email = "jeskar2@web.de",
-                       password= "1234")
+        karsten = User(name="Karsten Jeschkies", email="jeskar2@web.de", password="1234")
         karsten.save()
 
     def tearDown(self):
         #remove user
-        karsten = User.objects(name = "Karsten Jeschkies")
+        karsten = User.objects(name="Karsten Jeschkies")
         karsten.delete(safe=True)    
 
     def test_fetch_user(self):
         #karsten aus datenbank holen
-        karsten = User.objects(name = "Karsten Jeschkies").first()
+        karsten = User.objects(name="Karsten Jeschkies").first()
         
         self.assertIsNotNone(karsten)
 
@@ -69,12 +70,12 @@ class UserFetchCase(unittest.TestCase):
         no_user = User.objects(name="not found").first()
 
         self.assertIsNone(no_user)
-        
+
+
 class VendorFetchCase(unittest.TestCase):
     
     def setUp(self):
-        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', 
-                            level=logging.DEBUG)
+        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
         
         #Fill Database
         #If adding works is checked in tests
@@ -84,19 +85,20 @@ class VendorFetchCase(unittest.TestCase):
         vendor.save()
         
     def tearDown(self):
-        vendor = Vendor.objects(name = "techcrunch")
+        vendor = Vendor.objects(name="techcrunch")
         vendor.delete(safe=True)
         
     def test_fetch_vendor(self):
-        techcrunch = Vendor.objects(name = "techcrunch").first()
+        techcrunch = Vendor.objects(name="techcrunch").first()
         
         self.assertIsNotNone(techcrunch)
         
     def test_fail_find(self):
-        no_vendor = Vendor.objects(name = "not found").first()
+        no_vendor = Vendor.objects(name="not found").first()
         
         self.assertIsNone(no_vendor)
-        
+
+
 class ArticleFetchCase(unittest.TestCase):
     
     def setUp(self):
@@ -105,13 +107,12 @@ class ArticleFetchCase(unittest.TestCase):
         vendor.save()
         
         #create features
-        features = Features(version = '1.0')
+        features = Features(version='1.0')
         features.data = [(1, 0.5), (3, 0.6)]
         
         #add article
-        article = Article(vendor = vendor, url ="http://www.techcrunch.com", 
-                          author ="MG Siegler", clean_content = "Apple rocks!",
-                          date = datetime.now())
+        article = Article(vendor=vendor, url="http://www.techcrunch.com", author="MG Siegler",
+                          clean_content="Apple rocks!", date=datetime.now())
         article.features = features
         article.save()
         self._id = article.id
@@ -121,7 +122,7 @@ class ArticleFetchCase(unittest.TestCase):
         Article.objects(author="MG Siegler").delete()
         
     def test_fetch_article(self):
-        article = Article.objects(id = self._id).first()
+        article = Article.objects(id=self._id).first()
         
         self.assertIsNotNone(article)
         self.assertIsNotNone(article.features)
@@ -134,11 +135,12 @@ class ArticleFetchCase(unittest.TestCase):
         self.assertGreaterEqual(len(articles), 1)
         
     def test_features_data(self):
-        article = Article.objects(id = self._id).first()
+        article = Article.objects(id=self._id).first()
         
         #Tuples are converted to lists by mongodb
         self.assertEqual([[1, 0.5], [3, 0.6]], article.features.data)
-        
+
+
 class SubscriptionsTestCase(unittest.TestCase):
     
     def setUp(self):
@@ -152,14 +154,13 @@ class SubscriptionsTestCase(unittest.TestCase):
         features.data = [(1, 0.5), (3, 0.6)]
         
         #add article
-        article = Article(vendor = vendor, url ="http://www.techcrunch.com", 
-                          author ="MG Siegler", clean_content = "Apple rocks!")
+        article = Article(vendor = vendor, url="http://www.techcrunch.com", author="MG Siegler",
+                          clean_content="Apple rocks!")
         article.features = features
         article.save()
         
         #add user
-        karsten = User(name = "Karsten Jeschkies", email = "jeskar@web.de",
-                       password= "1234")
+        karsten = User(name="Karsten Jeschkies", email="jeskar@web.de", password= "1234")
         karsten.save()
         
         #add subscription
@@ -207,24 +208,22 @@ class SubscriptionsTestCase(unittest.TestCase):
         
         self.assertEqual(len(articles), 1)
         self.assertEqual(articles[0].author, "MG Siegler")
-        
+
+
 class FeedbackTestCase(unittest.TestCase):
     
     def setUp(self):
         
         #add article
-        article = Article(url ="http://www.techcrunch.com", 
-                          author ="MG Siegler", clean_content = "Apple rocks!")
+        article = Article(url="http://www.techcrunch.com", author="MG Siegler", clean_content="Apple rocks!")
         article.save()
         
         #add user
-        user = User(name = "Karsten Jeschkies", password="1234", 
-                    email="jeskar@web.de")
+        user = User(name="Karsten Jeschkies", password="1234", email="jeskar@web.de")
         user.save()
         
-        #add feedbakc
-        feedback = ReadArticleFeedback(user_id = user.id, 
-                                       article=article, score = 1.0)
+        #add feedback
+        feedback = ReadArticleFeedback(user_id=user.id, article=article, score=1.0)
         feedback.save()
         
     def tearDown(self):
@@ -234,23 +233,23 @@ class FeedbackTestCase(unittest.TestCase):
         
     def test_get_feedback(self):
         user = User.objects(name="Karsten Jeschkies").first()
-        feedback = ReadArticleFeedback.objects(user_id = user.id)
+        feedback = ReadArticleFeedback.objects(user_id=user.id)
         
         self.assertEqual(feedback[0].score, 1.0)
-        
+
+
 class RenkedArticlesTestCase(unittest.TestCase):
     
     def setUp(self):
-        user = User(name="Karsten Jeschkies", password="1234",
-                    email="jeskar@web.de")
+        user = User(name="Karsten Jeschkies", password="1234", email="jeskar@web.de")
         user.save()
         
         #ranked article 1
-        ranked_article_1 = RankedArticle(user_id = user.id, rating=0.6)
+        ranked_article_1 = RankedArticle(user_id=user.id, rating=0.6)
         ranked_article_1.save()
         
         #ranked article 2
-        ranked_article_2 = RankedArticle(user_id = user.id, rating=0.4)
+        ranked_article_2 = RankedArticle(user_id=user.id, rating=0.4)
         ranked_article_2.save()
         
     def tearDown(self):
@@ -263,13 +262,13 @@ class RenkedArticlesTestCase(unittest.TestCase):
         top_articles = (a.rating for a in RankedArticle.objects(user_id = user.id) if a.rating > 0.5)
         
         self.assertIn(0.6, top_articles)     
-        
+
+
 class UserTestCase(unittest.TestCase):
     
     def setUp(self):
         
-        user = User(name="Karsten Jeschkies", email="jeskar@web.de", 
-                    password ="1234")        
+        user = User(name="Karsten Jeschkies", email="jeskar@web.de", password="1234")
         user.save()
         
         learned_profile = UserModel()
@@ -283,7 +282,7 @@ class UserTestCase(unittest.TestCase):
         
     def test_get_learned_profile(self):
         user = User.objects(name="Karsten Jeschkies").first()
-        learned_profile = UserModel.objects(user_id = user.id).first()
+        learned_profile = UserModel.objects(user_id=user.id).first()
         
         self.assertIn([1, 0.5], learned_profile.data)
 
