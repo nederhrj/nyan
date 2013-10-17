@@ -31,8 +31,9 @@ from nyan.article_ranker.article_ranker import ArticleRanker
 from nyan.feature_extractor.extractors import EsaFeatureExtractor
 from FillTestDatabase import fill_database, clear_database
 import logging
-from mongoengine import *
+
 from nyan.shared_modules.models.mongodb_models import *
+from mongoengine import *
 import unittest
 from nyan.shared_modules.utils.helper import load_config
 

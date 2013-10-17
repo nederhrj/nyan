@@ -4,7 +4,7 @@ database:
   host: ""
   user: ""
   passwd: ""
-  db: ""
+  db: "test_nyan"
   article-table: ""
 #All news outlets with a config
 feeds:

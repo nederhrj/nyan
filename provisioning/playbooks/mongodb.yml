@@ -26,12 +26,24 @@
         src=../files/mongodb.conf.j2
         dest=/etc/mongodb.conf
         owner=root group=root mode=0644
-      notify:
-      - mongodb-restart
+
+
+- name: Start Mongo
+  hosts: all
+  user: vagrant
+  sudo: False
+  gather_facts: False
+
+  tasks:
+    - name: Create Database folder
+      action: mkdir /home/vagrant/data
+      tags: mongodb
 
     - name: Configure MongoDB
       action: service name=mongod state=started enabled=yes
       tags: mongodb
+    notify:
+      - mongodb-restart
 
   handlers:
     - name: mongodb-restart
