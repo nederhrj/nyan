@@ -1,13 +1,12 @@
 ---
 techcrunch:
   last_entry: !binary |-
-    aHR0cDovL3RlY2hjcnVuY2guY29tLzIwMTMvMTAvMTYvdHdpdHRlci1zYXlz
-    LWEtdGVjaG5pY2FsLWlzc3VlLWlzLXByZXZlbnRpbmctdXJscy1mcm9tLWJl
-    aW5nLXNlbnQtaW4tZGlyZWN0LW1lc3NhZ2VzLWZvci1zb21lLw==
+    aHR0cDovL3RlY2hjcnVuY2guY29tLzIwMTMvMTAvMTcvYml0bG9jay8=
 allthingsd:
   last_entry: !binary |-
-    aHR0cDovL2FsbHRoaW5nc2QuY29tLzIwMTMxMDE2L2Fua2ktYnJpbmdzLXZp
-    ZGVvLWdhbWVzLXRvLWxpZmUtd2l0aC1yb2JvdGljLXRveS1jYXJzLw==
+    aHR0cDovL2FsbHRoaW5nc2QuY29tLzIwMTMxMDE3L3doYXRzLXRoZS1wb2lu
+    dC1vZi1zcGVuZGluZy00MDAtbWlsbGlvbi1pZi15b3UtY2FudC1icmFnLWFi
+    b3V0LWl0Lw==
 allfacebook:
   last_entry: !binary |-
     aHR0cDovL2FsbGZhY2Vib29rLmNvbS9ub24tYmluZGluZy1zaGFyZWhvbGRl
@@ -29,13 +28,13 @@ anandtech:
 boingboing:
   last_entry: !binary |-
     aHR0cDovL3Jzcy5mZWVkc3BvcnRhbC5jb20vYy8zNTIwOC9mLzY1Mzk2NS9z
-    LzMyOGRiNDYwL3NjLzgvbC8wTGJvaW5nYm9pbmcwQm5ldDBDMjBBMTMwQzEw
-    QTBDMTYwQ3ZpZGVvMEVvZjBFaG91c2UwRXN0ZW5vZ3JhcGhlcjBFZ2UwQmh0
-    bWwvc3RvcnkwMS5odG0=
+    LzMyOTBiNjMxL3NjLzM4L2wvMExib2luZ2JvaW5nMEJuZXQwQzIwQTEzMEMx
+    MEEwQzE3MENyaXlsMEVwb2RjYXN0MEUwQTIxMEVtaW5pMEVyZWdnaTBCaHRt
+    bC9zdG9yeTAxLmh0bQ==
 bgr:
   last_entry: !binary |-
-    aHR0cDovL2Jnci5jb20vMjAxMy8xMC8xNy9hbWF6b24ta2luZGxlLXBob25l
-    LWh0Yy0yLw==
+    aHR0cDovL2Jnci5jb20vMjAxMy8xMC8xNy93aW5kb3dzLTgtMS1kb3dubG9h
+    ZC1saW5rLWF2YWlsYWJsZS8=
 engadget:
   last_entry: !binary |-
     aHR0cDovL3d3dy5lbmdhZGdldC5jb20v

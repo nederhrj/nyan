@@ -92,13 +92,13 @@ class ArticleRanker(object):
     def rank_article(self, article_as_dict):
         article_vendor = self.get_vendor(article_as_dict)
 
-        if article_vendor is not None:
+        if article_vendor is None:
             logger.error("No vendor for '%s'" % article_as_dict['news_vendor'])
             return
 
         stored_article = self.save_article(article_vendor, article_as_dict)
 
-        if stored_article is not None:
+        if stored_article is None:
             logger.error("Could not save article")
             return
 
