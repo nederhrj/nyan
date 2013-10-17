@@ -14,6 +14,7 @@ from nltk.tokenize import sent_tokenize
 def datetimeformat(value, format=u'%d-%m-%Y'):
     return value.strftime(format)
 
+
 #jinja2 filter to format date and time for nice readability
 def datetimeformat_read(value, format=u'%d-%m-%Y'):
     if is_today(value):
@@ -22,26 +23,31 @@ def datetimeformat_read(value, format=u'%d-%m-%Y'):
         return "Yesterday"
     return value.strftime(format)
 
+
 #jinja2 filter to to get first two sentences of article
 def firstparagraph(value):
     sentences = sent_tokenize(value)
     return " ".join(sentences[0:2])
+
 
 #jinja2 filter to get pervious day of datetime
 def prevdate(value):
     d = value - timedelta(days=1)
     return d
 
+
 #jinja2 filter to get next day of datetime
 def nextdate(value):
     d = value + timedelta(days=1)
     return d
+
 
 #jinja2 filter returns true if date (value) is today
 def is_today(value):
     if datetime.now() - value < timedelta(days=1):
         return True
     return False
+
 
 #jinja2 filter to measure performance
 START_TIME = 0
