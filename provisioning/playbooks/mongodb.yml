@@ -7,7 +7,7 @@
 
   tasks:
     - name: Add Yum repository
-      action: copy src=../files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
+      copy: src=../files/10gen.repo dest=/etc/yum.repos.d/10gen.repo
       tags: yum
 
 #    - name: Update Yum
@@ -15,7 +15,7 @@
 #      tags: yumupdate
 
     - name: Install MongoDB packages
-      action: yum pkg=$item state=latest
+      yum: pkg=$item state=latest
       with_items:
         - mongo-10gen
         - mongo-10gen-server
@@ -31,18 +31,18 @@
 - name: Start Mongo
   hosts: all
   user: vagrant
-  sudo: False
+  sudo: True
   gather_facts: False
 
   tasks:
     - name: Create Database folder
-      action: mkdir /home/vagrant/data
+      command: mkdir -p /home/vagrant/data
       tags: mongodb
 
     - name: Configure MongoDB
-      action: service name=mongod state=started enabled=yes
+      service: name=mongod state=started enabled=yes
       tags: mongodb
-    notify:
+      notify:
       - mongodb-restart
 
   handlers:
