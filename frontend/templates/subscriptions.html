@@ -28,9 +28,9 @@
                     <td width="30%">{{ v.name }}</td>
                     <td>
                         <div data-toggle="buttons-radio" class="btn-group">
-                            <button class="btn btn-primary {% if v|is_subscriped %} active {% endif %}" 
+                            <button class="btn btn-primary {% if v|is_subscribed %} active {% endif %}"
                                 data-subscripe-vendor="{{ v.id }}">Subscribe</button>
-                            <button class="btn btn-primary {% if not v|is_subscriped %} active {% endif %}"
+                            <button class="btn btn-primary {% if not v|is_subscribed %} active {% endif %}"
                                 data-unsubscripe-vendor="{{ v.id }}">Unsubscribe</button>
                         </div>
                     </td>

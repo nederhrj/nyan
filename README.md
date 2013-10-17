@@ -50,11 +50,19 @@ Prerequisites: [VirtualBox](http://www.virtualbox.org) and [Vagrant](www.vagrant
 - Open a shell to your new Centos box ("vagrant ssh"):
 
 -- cd /vagrant
--- sudo pip /usr/local/bin/install coilmq  # message broker
--- sudo pip /usr/local/bin/install numpy  # This needs to be before the requirements.txt install. Don't know why
--- sudo pip /usr/local/bin/install -r requirements.txt  # Install all Python requirements
+-- sudo /usr/local/bin/pip install coilmq  # message broker
+-- sudo /usr/local/bin/pip install numpy  # This needs to be before the requirements.txt install. Don't know why
+-- sudo /usr/local/bin/pip install -r requirements.txt  # Install all Python requirements
 -- bundle install  # Install all necessary Ruby gems
 -- sudo /usr/local/bin/python setup.py install
+
+-- in a python shell execute:
+import nltk
+nltk.download()
+
+enter:
+d punkt
+
 
 Start the message broker:
 
@@ -70,7 +78,15 @@ Start the frontend:
 
 Start the feature extractor as daemon:
 
--- "python nyan/feature_extractor/main.py start --config config.yaml --log test.log -d"
+-- cd nyan/feature_extractor
+-- main.py start --config ../../config.yaml --log test.log -d"
+
+(Note: You may watch test.log for debug/connection information)
+
+Start the article ranker as deamon:
+
+-- cd nyan/article_ranker
+-- "python nyan/article_ranker/main.py start --config config.yaml --log test.log -d"
 
 
 

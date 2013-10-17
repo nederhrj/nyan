@@ -264,7 +264,7 @@ def register():
     Registers a new user to service.
     """
     #only Karsten is allowed to add a new user
-    if current_user.get_email() != "jeskar@web.de":
+    if current_user.get_email() != "test@testmail.com":
         return redirect(url_for('index'))
 
     return render_template('add_user.html', tab="", date=datetime.now())

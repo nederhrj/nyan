@@ -12,3 +12,4 @@ BeautifulSoup4
 pattern
 multiprocessing
 flask-debugtoolbar
+flask-mongoengine

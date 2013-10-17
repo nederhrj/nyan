@@ -7,6 +7,7 @@ Created on 15.10.2012
 from datetime import timedelta
 from flask.ext.login import (current_user, UserMixin, AnonymousUserMixin)
 from nyan.shared_modules.models.mongodb_models import (User, Article, RankedArticle, ReadArticleFeedback)
+from mongoengine import *
 
 
 class AppUser(UserMixin):
@@ -21,7 +22,7 @@ class AppUser(UserMixin):
         return self.active
 
     def get_id(self):
-        return self.mongodb_user.id
+        return str(self.mongodb_user.id)
 
     def get_email(self):
         return self.mongodb_user.email
