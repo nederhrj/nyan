@@ -53,6 +53,8 @@ logger = logging.getLogger("main")
 class StompListener(object):
     def __init__(self, config):
         self.config_ = config
+        self.logger = logging.getLogger("main")
+        self.stdout = sys.stdout
 
         #Connect to mongo database
         try:
@@ -86,13 +88,34 @@ class StompListener(object):
         #save and rank article
         self.rank_article(received_message)
 
+    def __print_async(self, frame_type, headers, body):
+        """
+        Utility function to print a message and setup the command prompt
+        for the next input
+        """
+        self.__sysout("\r  \r", end='')
+        self.__sysout(frame_type)
+        for header_key in headers.keys():
+            self.__sysout('%s: %s' % (header_key, headers[header_key]))
+        self.__sysout('')
+        self.__sysout(body)
+        self.__sysout('> ', end='')
+        self.stdout.flush()
+
+    def on_connected(self, headers, body):
+        self.__print_async("CONNECTED", headers, body)
+
+    def __error(self, msg, end="\n"):
+        self.stdout.write(str(msg) + end)
+
+    def __sysout(self, msg, end="\n"):
+        self.stdout.write(str(msg) + end)
+
 
 class ArticleRankerDaemon(Daemon):
     def __init__(self, pidfile, config_file=None, log_file=None):
 
-        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
-                            level=logging.DEBUG,
-                            filename=log_file)
+        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG, filename=log_file)
         try:
             if config_file is not None:
                 stream = file(config_file, 'r')
@@ -113,7 +136,7 @@ class ArticleRankerDaemon(Daemon):
 
         logger = logging.getLogger("main")
 
-        if self.config_ is not None:
+        if self.config_ is None:
             logger.error("No config.")
             sys.exit(1)
 

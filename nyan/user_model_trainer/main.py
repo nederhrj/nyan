@@ -51,7 +51,6 @@ if __name__ == '__main__':
 
     (options, args) = p.parse_args()
 
-
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
                         level=logging.DEBUG,
                         filename=options.log)
@@ -78,8 +77,7 @@ if __name__ == '__main__':
     users = User.objects()
     for u in users:
         logger.info("for %s" % u.name)
-        trainer = UserModelCentroid(user_id=u.id,
-                                    extractor=feature_extractor)
+        trainer = UserModelCentroid(user_id=u.id, extractor=feature_extractor)
         trainer.train()
         trainer.save()
     logger.info("...done.")

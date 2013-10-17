@@ -54,6 +54,11 @@ Prerequisites: [VirtualBox](http://www.virtualbox.org) and [Vagrant](www.vagrant
 -- sudo /usr/local/bin/pip install numpy  # This needs to be before the requirements.txt install. Don't know why
 -- sudo /usr/local/bin/pip install -r requirements.txt  # Install all Python requirements
 -- bundle install  # Install all necessary Ruby gems
+
+NOTE: if bundle is not found please do:
+    gem install bundle
+    rbenv rehash
+
 -- sudo /usr/local/bin/python setup.py install
 
 -- in a python shell execute:
@@ -79,16 +84,16 @@ Start the frontend:
 Start the feature extractor as daemon:
 
 -- cd nyan/feature_extractor
--- main.py start --config ../../config.yaml --log test.log -d"
+-- python main.py start --config ../../config.yaml --log test.log -d"
 
 (Note: You may watch test.log for debug/connection information)
 
 Start the article ranker as deamon:
 
 -- cd nyan/article_ranker
--- "python nyan/article_ranker/main.py start --config config.yaml --log test.log -d"
+-- "python main.py start --config ../../config.yaml --log test.log -d"
 
-
+(Note: You may watch test.log for debug/connection information)
 
 Dependencies and Requirements
 =============================
