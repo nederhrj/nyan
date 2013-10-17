@@ -44,15 +44,16 @@ def clear_database():
     RankedArticle.objects().delete()
     Feedback.objects().delete()
 
+
 def fill_database():
     #drop everything
     clear_database()
     
     #add vendors
-    vendor = Vendor(name="TechCrunch", config = "vendor config")
+    vendor = Vendor(name="TechCrunch", config="vendor config")
     vendor.save()
     
-    vendor2 = Vendor(name="AllThingsD", config = "vendor config 2")
+    vendor2 = Vendor(name="AllThingsD", config="vendor config 2")
     vendor2.save()
     
     #create features
