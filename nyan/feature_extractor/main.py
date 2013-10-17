@@ -45,8 +45,23 @@ class StompListener(object):
     def __init__(self, config):
         self.config_ = config
         self.logger_ = logging.getLogger("main")
+        self.stdout = sys.stdout
 
         self.extractor = EsaFeatureExtractor(prefix=config['prefix'])
+
+    def __print_async(self, frame_type, headers, body):
+        """
+        Utility function to print a message and setup the command prompt
+        for the next input
+        """
+        self.__sysout("\r  \r", end='')
+        self.__sysout(frame_type)
+        for header_key in headers.keys():
+            self.__sysout('%s: %s' % (header_key, headers[header_key]))
+        self.__sysout('')
+        self.__sysout(body)
+        self.__sysout('> ', end='')
+        self.stdout.flush()
 
     def __extract_features(self, message):
         """
@@ -75,6 +90,15 @@ class StompListener(object):
     def on_message(self, headers, message):
         received_message = json.loads(message)
         self.__extract_features(received_message)
+
+    def on_connected(self, headers, body):
+        self.__print_async("CONNECTED", headers, body)
+
+    def __sysout(self, msg, end="\n"):
+        self.stdout.write(str(msg) + end)
+
+    def __error(self, msg, end="\n"):
+        self.stdout.write(str(msg) + end)
 
     def set_stomp_connection(self, connection):
         self.conn_ = connection
@@ -114,7 +138,7 @@ class FeatureExtractorDaemon(Daemon):
             logger.error("No config.")
             sys.exit(1)
 
-        hosts = [('localhost', 61614)]
+        hosts = [('localhost', 61613)]
 
         connected = False
         trys = 5
