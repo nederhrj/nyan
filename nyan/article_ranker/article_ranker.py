@@ -29,7 +29,7 @@ from datetime import datetime
 import logging
 
 from nyan.shared_modules.models.mongodb_models import *
-from nyan.shared_modules.user_models import UserModelCentroid
+from user_models import UserModelSVM
 
 
 logger = logging.getLogger("main")
@@ -107,6 +107,7 @@ class ArticleRanker(object):
 
         #rank article for each user to her profile
         for u in users:
-            user_model = UserModelCentroid(user_id=u.id, extractor=self.feature_extractor_)
+            user_model = UserModelSVM(user_id=u.id, extractor=self.feature_extractor_)
             ranking = user_model.rank(stored_article)
             self.save_rating(u, stored_article, ranking)
+            logger.info("Store rating for user: " + str(ranking))

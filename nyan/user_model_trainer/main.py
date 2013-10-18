@@ -32,7 +32,7 @@ from mongoengine import *
 from extractors import EsaFeatureExtractor
 #from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor
 from nyan.shared_modules.models.mongodb_models import User
-from nyan.shared_modules.user_models import UserModelCentroid
+from nyan.shared_modules.user_models import UserModelSVM
 from nyan.shared_modules.utils.helper import load_config
 
 
@@ -51,9 +51,7 @@ if __name__ == '__main__':
 
     (options, args) = p.parse_args()
 
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
-                        level=logging.DEBUG,
-                        filename=options.log)
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG, filename=options.log)
 
     #load config
     logger = logging.getLogger("main")
@@ -77,7 +75,7 @@ if __name__ == '__main__':
     users = User.objects()
     for u in users:
         logger.info("for %s" % u.name)
-        trainer = UserModelCentroid(user_id=u.id, extractor=feature_extractor)
+        trainer = UserModelSVM(user_id=u.id, extractor=feature_extractor)
         trainer.train()
         trainer.save()
     logger.info("...done.")

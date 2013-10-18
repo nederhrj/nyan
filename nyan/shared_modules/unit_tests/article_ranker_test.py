@@ -40,17 +40,16 @@ from nyan.shared_modules.utils.helper import load_config
 logger = logging.getLogger("unittesting")
 
 #Connect to test database
-connect("nyan_test", port = 20545)
+connect("nyan_test", port=27017)
+
 
 class ArticleRankerTest(unittest.TestCase):
 
-
     def setUp(self):
         fill_database()
-        config_ = load_config(file_path = "/media/sdc1/Aptana Studio 3 Workspace/configs/config.yaml",
-                              logger = logger)
-        self.feature_extractor = EsaFeatureExtractor(prefix = config_['prefix'])
-        self.ranker = ArticleRanker(extractor = self.feature_extractor)
+        config_ = load_config(file_path="/vagrant/config.yaml", logger = logger)
+        self.feature_extractor = EsaFeatureExtractor(prefix=config_['prefix'])
+        self.ranker = ArticleRanker(extractor=self.feature_extractor)
         self.article_as_dict = {'news_vendor': 'TechCrunch', 
                                 'author': "MG Siegler",
                                 'link': "http://www.techcrunch.com",
@@ -93,8 +92,8 @@ class ArticleRankerTest(unittest.TestCase):
     def test_save_rating(self):
         vendor = self.ranker.get_vendor(self.article_as_dict)  
         stored_article = self.ranker.save_article(vendor, self.article_as_dict)
-        user = User.objects(name = "Karsten Jeschkies").first()
-        self.ranker.save_rating(user=user, article = stored_article, rating = 1.0)
+        user = User.objects(name="Karsten Jeschkies").first()
+        self.ranker.save_rating(user=user, article=stored_article, rating=1.0)
         
         user.reload()
         ranked_articles = RankedArticle.objects(user_id = user.id)

@@ -34,7 +34,7 @@ import cPickle
 from gensim import interfaces, utils, matutils, similarities
 from itertools import chain, izip
 import logging
-from models.mongodb_models import (Article, User, UserModel, Feedback, Features, ReadArticleFeedback, RankedArticle)
+from nyan.shared_modules.models.mongodb_models import (Article, User, UserModel, Feedback, Features, ReadArticleFeedback, RankedArticle)
 
 from mongoengine import queryset
 import numpy
@@ -45,8 +45,7 @@ from sets import Set
 #from naive_bayes import GaussianNB #iterative GaussainNB
 from sklearn.naive_bayes import GaussianNB
 from sklearn import svm, tree
-from smote import SMOTE, borderlineSMOTE
-import numpy as numpy
+from nyan.shared_modules.smote import SMOTE, borderlineSMOTE
 
 logger = logging.getLogger("main")
 
@@ -54,7 +53,7 @@ logger = logging.getLogger("main")
 class UserModelBase(object):
     
     def __init__(self, user_id, extractor):
-        self.user = User.objects(id=user_id).first()
+        self.user  = User.objects(id = user_id).first()
         
         self.extractor = extractor
         
@@ -127,16 +126,14 @@ class UserModelCentroid(UserModelBase):
     Analysis & Experimental Results" ,2000
     """
 
-    def __init__(self):
-        self.user_model_features=[]
-        self.READ = 2
-        self.UNREAD = 1
+    READ = 2
+    UNREAD = 1
 
     @classmethod
     def get_version(cls):
         return "UserModelCentroid-1.0"
      
-    def train(self, read_article_ids=None, unread_article_ids= None):
+    def train(self, read_article_ids = None, unread_article_ids = None):
         #Load user feedback if needed
         if read_article_ids is None:
             read_article_ids = (r.article.id for r in ReadArticleFeedback.objects(user_id=self.user.id).only("article"))
@@ -188,11 +185,11 @@ class UserModelCentroid(UserModelBase):
         NOTE: No feature conversion is done!
         """
         
-        learned_user_model = UserModel.objects(user_id=self.user.id).first()
+        #learned_user_model = UserModel.objects(user_id = self.user.id).first()
         
-        if learned_user_model is None:
-            self.user_model_features = []
-            return
+        #if learned_user_model is None:
+        #    self.user_model_features = []
+        #    return
         
         #get learned profile/model
         #convert features to list of tuples. 
@@ -255,11 +252,9 @@ class UserModelBayes(UserModelBase):
     
     Does not use SMOTE
     """
-
-    def __init__(self):
-        self.READ = 2
-        self.UNREAD = 1
-        self.clf = GaussianNB()
+    
+    READ = 2
+    UNREAD = 1
 
     @classmethod
     def get_version(cls):
@@ -337,7 +332,7 @@ class UserModelBayes(UserModelBase):
         #convert all article features
         all_articles = UserModelBayes.AllArticles(read_articles, unread_articles, self.get_features)
             
-        #self.clf = GaussianNB()
+        self.clf = GaussianNB()
         self.clf.fit(numpy.array(list(all_articles)), numpy.array(list(all_articles.get_marks())))
         
     def save(self):
@@ -401,22 +396,23 @@ class UserModelBayes(UserModelBase):
 
 
 class UserModelSVM(UserModelBayes):
+    
+    READ = 2
+    UNREAD = 1
 
     @classmethod
     def get_version(cls):
         return "UserModelSVM-1.0"
-            self.set_samples_sizes()
-
+    
     def __init__(self, user_id, extractor):
-        self.READ = 2
-        selfUNREAD = 1
-        self.clf = svm.SVC(kernel='linear')
-
+        self.set_samples_sizes()
+        
         super(UserModelSVM, self).__init__(user_id, extractor)
+        self.clf = svm.SVC(kernel='linear')
 
     def _calculate_mean_and_std_deviation(self, X):
         """
-        Calculates mean and standard deviation of sample features.
+        Caluclates mean and standard deviation of sample features.
         
         Parameters
         ----------
@@ -424,9 +420,11 @@ class UserModelSVM(UserModelBayes):
         """
         
         _, n_features = X.shape
-
+        
+        self.theta_ = numpy.zeros((n_features))
+        self.sigma_ = numpy.zeros((n_features))
         epsilon = 1e-9
-
+        
         self.theta_[:] = numpy.mean(X[:,:], axis=0)
         self.sigma_[:] = numpy.std(X[:,:], axis=0) + epsilon
         
@@ -495,7 +493,7 @@ class UserModelSVM(UserModelBayes):
                 
         #Create read article vectors
         read_marks = numpy.empty(len(read_article_ids))
-        read_marks.fill(UserModelSVM.READ)
+        read_marks.fill(UserModelSVM.READ)  
         read_articles = numpy.empty(shape=(len(read_article_ids), self.num_features_))
         
         for i, article in enumerate(Article.objects(id__in = read_article_ids)):
@@ -545,10 +543,12 @@ class UserModelSVM(UserModelBayes):
                                       unread_marks))
                     )  
         
-    def set_samples_sizes(self, p_synthetic_samples=300, p_majority_samples=500):
+    def set_samples_sizes(self, 
+                          p_synthetic_samples=300,
+                          p_majority_samples=500):
         self.p_synthetic_samples = p_synthetic_samples
         self.p_majority_samples = p_majority_samples
-
+    
     def train(self, read_article_ids=None, unread_article_ids=None):
         """
         Trains the SVM Classifier.
@@ -595,15 +595,17 @@ class UserModelSVM(UserModelBayes):
                     'sigma': pickled_sigma}
             
             #replace profile
-            UserModel.objects(user_id=self.user.id).update(upsert=True, set__user_id=self.user.id, set__data=data,
-                                                           set__version=self.get_version())
+            UserModel.objects(user_id=self.user.id).update(upsert=True,
+                                                             set__user_id=self.user.id,
+                                                             set__data=data,
+                                                             set__version=self.get_version())
             
         except Exception as inst:
             logger.error("Could not save learned user model due to unknown error %s: %s" % (type(inst), inst))
             
     def load(self):
         try:
-            if self.clf is not None:
+            if self.clf is None:
                 return
             
             user_model = UserModel.objects(user_id=self.user.id).first()
@@ -628,7 +630,7 @@ class UserModelSVM(UserModelBayes):
             self.clf = cPickle.loads(pickled_classifier)
             self.theta_ = cPickle.loads(pickled_theta)
             self.sigma_ = cPickle.loads(pickled_sigma)
-
+                
         except Exception as inst:
             logger.error("Could not load learned user model due to unknown error %s: %s" % (type(inst), inst))
         
@@ -643,15 +645,14 @@ class UserModelSVM(UserModelBayes):
             logger.error("No classifier for user %s." % self.user.id)
             raise NoClassifier("SVM Classifier for user %s seems to be None." % self.user.id)
 
-        data = numpy.empty(shape=(1,self.num_features_), dtype=numpy.float32)
+        data = numpy.empty(shape=(1, self.num_features_), dtype=numpy.float32)
         
         data[0] = self.get_features(doc)
         data = self._normalize(data)
         prediction = self.clf.predict(data)
         
         return prediction[0]
-
-
+        
 class UserModelTree(UserModelSVM):
     
     READ = 2
@@ -661,7 +662,7 @@ class UserModelTree(UserModelSVM):
     def get_version(cls):
         return "UserModelMeta-1.0"
     
-    def train(self, read_article_ids=None, unread_article_ids=None):
+    def train(self, read_article_ids = None, unread_article_ids=None):
         """
         Trains the DecisionTree Classifier.
         read_article_ids should be an iterable over read article ids
@@ -737,7 +738,7 @@ class UserModelMeta(UserModelSVM):
                 clf.fit(articles, marks)
                 self.classifiers_.append(clf)
     
-    def train(self, read_article_ids=None, unread_article_ids=None):
+    def train(self, read_article_ids = None, unread_article_ids = None):
         """
         Trains the several SVM and Naive Bayes Classifiers.
         read_article_ids should be an iterable over read article ids
@@ -748,8 +749,8 @@ class UserModelMeta(UserModelSVM):
         
         #Load user feedback if needed
         if read_article_ids is None:
-            read_article_ids = Set(r.article.id
-                                   for r in ReadArticleFeedback.objects(user_id=self.user.id).only("article"))
+            read_article_ids = Set(r.article.id 
+                                for r in ReadArticleFeedback.objects(user_id=self.user.id).only("article"))
         else:
             read_article_ids = Set(read_article_ids)
 

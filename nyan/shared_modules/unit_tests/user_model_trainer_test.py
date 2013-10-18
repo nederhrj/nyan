@@ -34,11 +34,11 @@ from mongoengine import *
 import numpy as np
 
 from nyan.feature_extractor.extractors import EsaFeatureExtractor, TfidfFeatureExtractor
-from naive_bayes import GaussianNB
-from user_models import UserModelCentroid, UserModelBayes, UserModelSVM
+from nyan.shared_modules.naive_bayes import GaussianNB
+from nyan.shared_modules.user_models import UserModelCentroid, UserModelBayes, UserModelSVM
 from FillTestDatabase import fill_database, clear_database
-from models.mongodb_models import Article,  User, UserModel
-from utils.helper import load_config
+from nyan.shared_modules.models.mongodb_models import Article,  User, UserModel
+from nyan.shared_modules.utils.helper import load_config
 
 
 logger = logging.getLogger("unittesting")
@@ -46,28 +46,24 @@ logger = logging.getLogger("unittesting")
 class UserModelCentroidTest(unittest.TestCase):
 
     def setUp(self):
-        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', 
-                            level=logging.DEBUG)
+        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
             
         
-        config = load_config(file_path = "/home/karten/Programmierung/frontend/config.yaml",
-                                  logger = logger,
-                                  exit_with_error = True)
+        config = load_config(file_path="/vagrant/config.yaml", logger=logger, exit_with_error=True)
         
         #Connect to test database
-        connect("nyan_test", port = 27017)
+        connect("nyan_test", port=27017)
         fill_database()
         #connect(config['database']['db-name'], 
         #        username= config['database']['user'], 
         #        password= config['database']['passwd'], 
         #        port = config['database']['port'])
 
-        self.user_id = User.objects(email = u'jeskar@web.de').first().id
+        self.user_id = User.objects(email=u'test@testmail.com').first().id
         
         #self.feature_extractor = EsaFeatureExtractor(prefix = config['prefix'])
-        self.feature_extractor = TfidfFeatureExtractor(prefix = config['prefix'])
-        self.trainer = UserModelCentroid(self.user_id,
-                                         extractor = self.feature_extractor)
+        self.feature_extractor = TfidfFeatureExtractor(prefix=config['prefix'])
+        self.trainer = UserModelCentroid(self.user_id, extractor = self.feature_extractor)
 
     def tearDown(self):
         clear_database()
@@ -76,7 +72,7 @@ class UserModelCentroidTest(unittest.TestCase):
     def test_train(self):
         self.trainer.train()
         
-        self.assertAlmostEqual(self.trainer.learned_user_models_data[0][1], 
+        self.assertAlmostEqual(self.trainer.learned_user_models_data[0][1],
                                0.1553, 4)
         
     @unittest.skip("no saving yet")
@@ -84,11 +80,12 @@ class UserModelCentroidTest(unittest.TestCase):
         self.trainer.train()
         self.trainer.save()
         
-        user_model = UserModel.objects(user_id = self.user_id).first()
+        user_model = UserModel.objects(user_id=self.user_id).first()
         
         self.assertAlmostEqual(user_model.data[0][1], 
                                0.0021, 4)    
-        
+
+
 class NaiveBayesTest(unittest.TestCase):
     
     def setUp(self):
@@ -115,30 +112,28 @@ class NaiveBayesTest(unittest.TestCase):
         result = clf.predict([[-0.8, -1]])
         
         self.assertEqual(result, [1])      
-        
+
+
 class UserModelBayesTest(unittest.TestCase):
 
     def setUp(self):
-        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', 
-                            level=logging.DEBUG)
+        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
             
         
-        config = load_config(file_path = "/home/karten/Programmierung/frontend/config.yaml",
-                             logger = logger,
-                             exit_with_error = True)
+        config = load_config(file_path="/vagrant/config.yaml", logger=logger, exit_with_error = True)
         
         #Connect to test database
-        connect("nyan_test", port = 27017)
+        connect("nyan_test", port=27017)
         fill_database()
         #connect(config['database']['db-name'], 
         #        username= config['database']['user'], 
         #        password= config['database']['passwd'], 
         #        port = config['database']['port'])
 
-        self.user_id = User.objects(email = u'jeskar@web.de').first().id
+        self.user_id = User.objects(email = u'test@testmail.com').first().id
         #feature_extractor = EsaFeatureExtractor(prefix = config['prefix'])
-        feature_extractor = TfidfFeatureExtractor(prefix = config['prefix'])
-        self.trainer = UserModelBayes(self.user_id, extractor = feature_extractor)
+        feature_extractor = TfidfFeatureExtractor(prefix=config['prefix'])
+        self.trainer = UserModelBayes(self.user_id, extractor=feature_extractor)
 
     def tearDown(self):
         clear_database()
@@ -171,39 +166,35 @@ class UserModelBayesTest(unittest.TestCase):
     def test_rank(self):
         self.trainer.train()
         
-        unread_doc = Article.objects(headline = u"Sony = Bad").first()
-        read_doc = Article.objects(headline = u"Apple").first()
+        unread_doc = Article.objects(headline=u"Sony = Bad").first()
+        read_doc = Article.objects(headline=u"Apple").first()
         
         rank_unread_doc = self.trainer.rank(unread_doc)
         rank_read_doc = self.trainer.rank(read_doc)
         
         self.assertEqual(rank_unread_doc, UserModelBayes.UNREAD) 
         self.assertEqual(rank_read_doc, UserModelBayes.READ) 
-        
+
+
 class UserModelSVMTest(unittest.TestCase):
 
     def setUp(self):
-        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', 
-                            level=logging.DEBUG)
-            
+        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
         
-        config = load_config(file_path = ("/media/sdc1/Aptana Studio 3 Workspace"
-                                          "/configs/config.yaml"),
-                             logger = logger,
-                             exit_with_error = True)
+        config = load_config(file_path="/vagrant/config.yaml", logger=logger, exit_with_error=True)
         
         #Connect to test database
-        connect("nyan_test", port = 20545)
+        connect("nyan_test", port=27017)
         fill_database()
         #connect(config['database']['db-name'], 
         #        username= config['database']['user'], 
         #        password= config['database']['passwd'], 
         #        port = config['database']['port'])
 
-        self.user_id = User.objects(email = u'jeskar@web.de').first().id
+        self.user_id = User.objects(email=u'test@testmail.com').first().id
         #feature_extractor = EsaFeatureExtractor(prefix = config['prefix'])
-        feature_extractor = TfidfFeatureExtractor(prefix = config['prefix'])
-        self.trainer = UserModelSVM(self.user_id, extractor = feature_extractor)
+        feature_extractor = TfidfFeatureExtractor(prefix=config['prefix'])
+        self.trainer = UserModelSVM(self.user_id, extractor=feature_extractor)
 
     def tearDown(self):
         clear_database()
@@ -260,8 +251,8 @@ class UserModelSVMTest(unittest.TestCase):
     def test_rank(self):
         self.trainer.train()
         
-        unread_doc = Article.objects(headline = u"Sony = Bad").first()
-        read_doc = Article.objects(headline = u"Apple").first()
+        unread_doc = Article.objects(headline=u"Sony = Bad").first()
+        read_doc = Article.objects(headline=u"Apple").first()
         
         rank_unread_doc = self.trainer.rank(unread_doc)
         rank_read_doc = self.trainer.rank(read_doc)

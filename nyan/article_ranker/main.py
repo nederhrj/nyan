@@ -86,6 +86,7 @@ class StompListener(object):
         received_message = json.loads(message)
 
         #save and rank article
+        logger.info("*Ranked article* -> " + message)
         self.rank_article(received_message)
 
     def __print_async(self, frame_type, headers, body):
@@ -110,6 +111,9 @@ class StompListener(object):
 
     def __sysout(self, msg, end="\n"):
         self.stdout.write(str(msg) + end)
+
+    def on_send(self, headers, body):
+        self.__print_async("SEND", headers, body)
 
 
 class ArticleRankerDaemon(Daemon):

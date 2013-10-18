@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,14 +20,14 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
-'''
+"""
 @author: Karsten Jeschkies <jeskar@web.de>
 
 The unittests are not complete.
-'''
-from kmedoids import KMedoids
+"""
+from nyan.shared_modules.kmedoids import KMedoids
 from gensim.corpora import Dictionary, MmCorpus
 from gensim.models import tfidfmodel
 import logging

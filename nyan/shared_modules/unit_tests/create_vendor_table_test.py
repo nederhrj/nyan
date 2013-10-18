@@ -8,7 +8,6 @@ from nyan.shared_modules.models.mongodb_models import *
 
 """ Creates vendors in mongodb """
 
-
 def add_vendors():
     for vendor in ["techcrunch", "allthingsd", "allfacebook", "androidandme", "anandtech", "boingboing", "bgr", "engadget"]:
         logging.info("add vendor" + vendor)
@@ -22,6 +21,8 @@ if __name__ == '__main__':
         connect("nyan_test")
     except Exception as e:
         logging.error("Could not connect to MongoDB due to error %s: %s" % (type(e), e))
+
+    Vendor.objects().delete
 
     try:
         add_vendors()
