@@ -32,7 +32,7 @@ from mongoengine import *
 from extractors import EsaFeatureExtractor
 #from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor
 from nyan.shared_modules.models.mongodb_models import User
-from nyan.shared_modules.user_models import UserModelSVM
+from nyan.shared_modules.user_models import UserModelCentroid
 from nyan.shared_modules.utils.helper import load_config
 
 
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     users = User.objects()
     for u in users:
         logger.info("for %s" % u.name)
-        trainer = UserModelSVM(user_id=u.id, extractor=feature_extractor)
+        trainer = UserModelCentroid(user_id=u.id, extractor=feature_extractor)
         trainer.train()
         trainer.save()
     logger.info("...done.")

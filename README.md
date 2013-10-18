@@ -73,10 +73,6 @@ Start the message broker:
 
 -- start CoilMQ: "coilmq &"
 
-Crawl some rss feeds:
-
--- bin/feed_crawler/feed_crawler.rb -l crawl.log -c bin/feed_crawler/feed-crawler-config.yaml -s bin/feed_crawler/feed_state.yaml
-
 Start the frontend:
 
 -- "python frontend/frontend.py". You can access the login page at [http://127.0.0.1:5001](http://127.0.0.1:5001)
@@ -94,6 +90,10 @@ Start the article ranker as deamon:
 -- "python main.py start --config ../../config.yaml --log test.log -d"
 
 (Note: You may watch test.log for debug/connection information)
+
+Crawl some rss feeds:
+
+-- bin/feed_crawler/feed_crawler.rb -l crawl.log -c bin/feed_crawler/feed-crawler-config.yaml -s bin/feed_crawler/feed_state.yaml
 
 Dependencies and Requirements
 =============================

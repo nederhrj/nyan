@@ -175,7 +175,7 @@ class UserModelCentroid(UserModelBase):
         #replace old user model with new
         try:
             #replace profile
-            UserModel.objects(user_id=self.user.id).update(upsert=True, set__user_id=self.user.id,
+            UserModel.objects(user_id=self.user.id).update(upsert=True, set__user_id=str(self.user.id),
                                                            set__data=self.user_model_features,
                                                            set__version=self.get_version())
         except Exception as inst:
