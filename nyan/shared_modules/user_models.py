@@ -21,6 +21,8 @@ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTIO
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
+from bson import ObjectId
+import numpy
 
 """
 Created on 29.10.2012
@@ -31,22 +33,19 @@ Several different user models for capturing a user's interests.
 """
 
 import cPickle
-from gensim import interfaces, utils, matutils, similarities
+from gensim import matutils, similarities
 from itertools import chain, izip
 import logging
-from models.mongodb_models import (Article, User, UserModel, Feedback, Features, ReadArticleFeedback, RankedArticle)
+from models.mongodb_models import (Article, User, UserModel, Features, ReadArticleFeedback, RankedArticle)
 
 from mongoengine import queryset
-import numpy
+
 from random import sample
-import scipy.sparse
-# TODO: change to  set and frozenset types.
-from sets import Set
 #from naive_bayes import GaussianNB #iterative GaussainNB
 from sklearn.naive_bayes import GaussianNB
 from sklearn import svm, tree
-from smote import SMOTE, borderlineSMOTE
-import numpy as numpy
+from smote import borderlineSMOTE
+
 
 logger = logging.getLogger("main")
 
@@ -127,10 +126,8 @@ class UserModelCentroid(UserModelBase):
     Analysis & Experimental Results" ,2000
     """
 
-    def __init__(self):
-        self.user_model_features=[]
-        self.READ = 2
-        self.UNREAD = 1
+    READ = 2
+    UNREAD = 1
 
     @classmethod
     def get_version(cls):
@@ -147,7 +144,7 @@ class UserModelCentroid(UserModelBase):
         
         num_loaded_articles = 0
         centroid = numpy.zeros(self.num_features_, dtype=numpy.float32)
-        
+
         for article in user_feedback:
             try:
                 article_features_as_full_vec = self.get_features(article)
@@ -175,8 +172,9 @@ class UserModelCentroid(UserModelBase):
         #replace old user model with new
         try:
             #replace profile
-            UserModel.objects(user_id=self.user.id).update(upsert=True, set__user_id=str(self.user.id),
-                                                           set__data=self.user_model_features,
+            pickled_user_model_features = cPickle.dumps(self.user_model_features).decode('utf-8')
+            UserModel.objects(user_id=self.user.id).update(upsert=True, set__user_id=self.user.id,
+                                                           set__data=pickled_user_model_features,
                                                            set__version=self.get_version())
         except Exception as inst:
             logger.error("Could not save learned user model due to unknown error %s: %s" % (type(inst), inst))
@@ -197,7 +195,6 @@ class UserModelCentroid(UserModelBase):
         #get learned profile/model
         #convert features to list of tuples. 
         #we make a double list because we will have more than one model soon.
-        #TODO: error in learned_user_model
         self.user_model_features = [[tuple(a) for a in learned_user_model.data] for profile in self.user.learned_profile]
             
     def rank(self, doc):
@@ -256,10 +253,8 @@ class UserModelBayes(UserModelBase):
     Does not use SMOTE
     """
 
-    def __init__(self):
-        self.READ = 2
-        self.UNREAD = 1
-        self.clf = GaussianNB()
+    READ = 2
+    UNREAD = 1
 
     @classmethod
     def get_version(cls):
@@ -304,7 +299,7 @@ class UserModelBayes(UserModelBase):
             for _, mark in self._iter_features_and_marks():
                 yield mark 
 
-    def train(self, read_article_ids = None, unread_article_ids = None):
+    def train(self, read_article_ids=None, unread_article_ids=None):
         """
         Trains the Bayes Classifier.
         read_article_ids should be an iterable over read article ids
@@ -315,10 +310,10 @@ class UserModelBayes(UserModelBase):
         
         #Load user feedback if needed
         if read_article_ids is None:
-            read_article_ids = Set(r.article.id for r
+            read_article_ids = set(r.article.id for r
                                    in ReadArticleFeedback.objects(user_id=self.user.id).only("article"))
         else:
-            read_article_ids = Set(read_article_ids)
+            read_article_ids = set(read_article_ids)
         
         logger.info("Use %d read articles for learning." % len(read_article_ids))
         read_articles = Article.objects(id__in=read_article_ids)
@@ -326,7 +321,7 @@ class UserModelBayes(UserModelBase):
         #Get all articles the user did not read.
         if unread_article_ids is None:
             ranked_article_ids = (a.article.id for a in RankedArticle.objects(user_id=self.user.id).only("article"))
-            all_article_ids = Set(a.id for a in Article.objects(id__in=ranked_article_ids).only("id"))
+            all_article_ids = set(a.id for a in Article.objects(id__in=ranked_article_ids).only("id"))
             unread_article_ids = all_article_ids - read_article_ids
             
         #undersample unreads
@@ -337,7 +332,7 @@ class UserModelBayes(UserModelBase):
         #convert all article features
         all_articles = UserModelBayes.AllArticles(read_articles, unread_articles, self.get_features)
             
-        #self.clf = GaussianNB()
+        self.clf = GaussianNB()
         self.clf.fit(numpy.array(list(all_articles)), numpy.array(list(all_articles.get_marks())))
         
     def save(self):
@@ -347,7 +342,7 @@ class UserModelBayes(UserModelBase):
             pickled_classifier = cPickle.dumps(self.clf).decode('utf-8')
             
             #replace profile
-            UserModel.objects(user_id = self.user.id).update(upsert=True,
+            UserModel.objects(user_id=self.user.id).update(upsert=True,
                                                              set__user_id=self.user.id,
                                                              set__data=pickled_classifier,
                                                              set__version=self.get_version())
@@ -402,15 +397,15 @@ class UserModelBayes(UserModelBase):
 
 class UserModelSVM(UserModelBayes):
 
+    READ = 2
+    UNREAD = 1
+
     @classmethod
     def get_version(cls):
         return "UserModelSVM-1.0"
-            self.set_samples_sizes()
 
     def __init__(self, user_id, extractor):
-        self.READ = 2
-        selfUNREAD = 1
-        self.clf = svm.SVC(kernel='linear')
+        self.set_samples_sizes()
 
         super(UserModelSVM, self).__init__(user_id, extractor)
 
@@ -425,6 +420,8 @@ class UserModelSVM(UserModelBayes):
         
         _, n_features = X.shape
 
+        self.theta_ = numpy.zeros((n_features))
+        self.sigma_ = numpy.zeros((n_features))
         epsilon = 1e-9
 
         self.theta_[:] = numpy.mean(X[:,:], axis=0)
@@ -477,7 +474,7 @@ class UserModelSVM(UserModelBayes):
         
         #Under-sample unread ids
         if p_majority_samples is not None:
-            unread_article_ids = Set(sample(unread_article_ids, min(p_majority_samples/100 * len(read_article_ids),
+            unread_article_ids = set(sample(unread_article_ids, min(p_majority_samples/100 * len(read_article_ids),
                                                                     len(unread_article_ids))))
         
         #Create unread article vectors
@@ -498,7 +495,7 @@ class UserModelSVM(UserModelBayes):
         read_marks.fill(UserModelSVM.READ)
         read_articles = numpy.empty(shape=(len(read_article_ids), self.num_features_))
         
-        for i, article in enumerate(Article.objects(id__in = read_article_ids)):
+        for i, article in enumerate(Article.objects(id__in=read_article_ids)):
             try:
                 article_features_as_full_vec = self.get_features(article)
                 read_articles[i,:] = article_features_as_full_vec[:]
@@ -560,15 +557,15 @@ class UserModelSVM(UserModelBayes):
         
         #Load user feedback if needed
         if read_article_ids is None:
-            read_article_ids = Set(r.article.id
+            read_article_ids = set(r.article.id
                                    for r in ReadArticleFeedback.objects(user_id=self.user.id).only("article"))
         else:
-            read_article_ids = Set(read_article_ids)
+            read_article_ids = set(read_article_ids)
 
         #Get all articles the user did not read.
         if unread_article_ids is None:
             ranked_article_ids = (a.article.id for a in RankedArticle.objects(user_id=self.user.id).only("article"))
-            all_article_ids = Set(a.id for a in Article.objects(id__in=ranked_article_ids).only("id"))
+            all_article_ids = set(a.id for a in Article.objects(id__in=ranked_article_ids).only("id"))
             unread_article_ids = all_article_ids - read_article_ids
         
         #convert all article features
@@ -579,6 +576,7 @@ class UserModelSVM(UserModelBayes):
 
         logger.debug("Learn on %d samples." % len(marks))
 
+        self.clf = svm.SVC(kernel='linear')
         self.clf.fit(all_articles, marks)
         
     def save(self):
@@ -672,16 +670,16 @@ class UserModelTree(UserModelSVM):
         
         #Load user feedback if needed
         if read_article_ids is None:
-            read_article_ids = Set(r.article.id
+            read_article_ids = set(r.article.id
                                    for r in ReadArticleFeedback.objects(user_id=self.user.id).only("article"))
         else:
-            read_article_ids = Set(read_article_ids)
+            read_article_ids = set(read_article_ids)
 
         #Get all articles the user did not read.
         if unread_article_ids is None:
             ranked_article_ids = (a.article.id
                                   for a in RankedArticle.objects(user_id=self.user.id).only("article"))
-            all_article_ids = Set(a.id 
+            all_article_ids = set(a.id
                                   for a in Article.objects(id__in=ranked_article_ids).only("id"))
             unread_article_ids = all_article_ids - read_article_ids
         
@@ -748,16 +746,16 @@ class UserModelMeta(UserModelSVM):
         
         #Load user feedback if needed
         if read_article_ids is None:
-            read_article_ids = Set(r.article.id
+            read_article_ids = set(r.article.id
                                    for r in ReadArticleFeedback.objects(user_id=self.user.id).only("article"))
         else:
-            read_article_ids = Set(read_article_ids)
+            read_article_ids = set(read_article_ids)
 
         #Get all articles the user did not read.
         if unread_article_ids is None:
             ranked_article_ids = (a.article.id 
                                for a in RankedArticle.objects(user_id=self.user.id).only("article"))
-            all_article_ids = Set(a.id 
+            all_article_ids = set(a.id
                                   for a in Article.objects(id__in=ranked_article_ids).only("id"))
             unread_article_ids = all_article_ids - read_article_ids
         
