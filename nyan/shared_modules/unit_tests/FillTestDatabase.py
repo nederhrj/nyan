@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,16 +20,16 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
-'''
+"""
 Created on 19.09.2012
 
 @author: karsten jeschkies <jeskar@web.de>
 
 A small script which is used by other unit tests to fill a mongodb test database 
 with data for testing.
-'''
+"""
 
 from datetime import datetime
 import logging
@@ -48,22 +48,22 @@ def clear_database():
 def fill_database():
     #drop everything
     clear_database()
-    
+
     #add vendors
     vendor = Vendor(name="TechCrunch", config="vendor config")
     vendor.save()
-    
+
     vendor2 = Vendor(name="AllThingsD", config="vendor config 2")
     vendor2.save()
-    
+
     #create features
-    features = Features(version = '1.0')
+    features = Features(version='1.0')
     features.data = [(1, 0.4), (3, 0.6)]
-    
+
     #add articles
-    article1 = Article(vendor = vendor, url ="http://www.techcrunch.com", 
-                      author ="MG Siegler",
-                      clean_content = u"The good times can’t last forever.\
+    article1 = Article(vendor=vendor, url="http://www.techcrunch.com",
+                       author="MG Siegler",
+                       clean_content=u"The good times can’t last forever.\
                                  Eventually the music dies off, the \
                                  balloons pop and everyone goes home.\
                                  Without sounding the hyperbole alarm,\
@@ -75,7 +75,7 @@ def fill_database():
                                  six-month low today. The price is still \
                                  up 30 percent on the year but far from its \
                                  74 percent increase a few months back.",
-                      content = u"The good times can’t last forever. \
+                       content=u"The good times can’t last forever. \
                                  Eventually the music dies off, the \
                                  balloons pop and everyone goes home.\
                                  Without sounding the hyperbole alarm,\
@@ -87,13 +87,13 @@ def fill_database():
                                  six-month low today. The price is still \
                                  up 30 percent on the year but far from its \
                                  74 percent increase a few months back.",
-                      headline = u"Apple", date = datetime.now())
+                       headline=u"Apple", date=datetime.now())
     article1.features = features
     article1.save()
-    
-    article2 = Article(vendor = vendor, url ="http://www.techcrunch.com", 
-                      author =u"MG Siegler",
-                      clean_content = u"It’s speedy, and for a streaming music \
+
+    article2 = Article(vendor=vendor, url="http://www.techcrunch.com",
+                       author=u"MG Siegler",
+                       clean_content=u"It’s speedy, and for a streaming music \
                           service like Spotify making the jump from desktop \
                           software to the browser, that’s of the utmost \
                           importance. This is just an early beta of what will \
@@ -101,14 +101,14 @@ def fill_database():
                           features and say I was impressed with the feel. But \
                           discovery still has a long way to go to unlock the \
                           potential of near infinite music.",
-                      content = u"<p>Apple rocks <i>again</i>!</p>",
-                      headline = u"Spotify, too", date = datetime.now())
+                       content=u"<p>Apple rocks <i>again</i>!</p>",
+                       headline=u"Spotify, too", date=datetime.now())
     article2.features = features
     article2.save()
-    
-    article3 = Article(vendor = vendor2, url ="http://www.allthingsd.com", 
-                      author =u"MG Fake", 
-                      clean_content = u"Sony makes a lot of really nice things, \
+
+    article3 = Article(vendor=vendor2, url="http://www.allthingsd.com",
+                       author=u"MG Fake",
+                       clean_content=u"Sony makes a lot of really nice things, \
                           but it has never taken smartphones seriously. That’s \
                           to change if Sony Mobile’s sales chief, Dennis van \
                           Schie, is to be believed. Speaking to the Financial \
@@ -120,55 +120,55 @@ def fill_database():
                           he said. A spokeswomen also noted that the model will\
                           be available at CES and Mobile World Congress in the \
                           first part of 2013.",
-                      content = u"<p>Apple sucks! ..bad</p>",
-                      headline = u"Sony = Bad", date = datetime.now())
+                       content=u"<p>Apple sucks! ..bad</p>",
+                       headline=u"Sony = Bad", date=datetime.now())
     article3.features = features
     article3.save()
-    
+
     #add user
-    user = User(name = u"Ronald Kok",
-                password = u"03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-                email = u"test@testmail.com")
-    
+    user = User(name=u"Ronald Kok",
+                password=u"03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+                email=u"test@testmail.com")
+
     #add subscription
     user.subscriptions.append(vendor)
     user.subscriptions.append(vendor2)
     user.save()
-    
+
     #add rank articles
-    ranked_article1 = RankedArticle(user_id= user.id, 
-                                    article=article1, rating = 0.7)
+    ranked_article1 = RankedArticle(user_id=user.id,
+                                    article=article1, rating=0.7)
     ranked_article1.save()
-    
-    ranked_article2 = RankedArticle(user_id= user.id,
-                                    article=article2, rating = 0.4)
+
+    ranked_article2 = RankedArticle(user_id=user.id,
+                                    article=article2, rating=0.4)
     ranked_article2.save()
-    
-    ranked_article3 = RankedArticle(user_id= user.id,
-                                    article=article3, rating = 0.4)
+
+    ranked_article3 = RankedArticle(user_id=user.id,
+                                    article=article3, rating=0.4)
     ranked_article3.save()
-    
+
     #add feedback
-    feedback1 = ReadArticleFeedback(user_id = user.id,
-                                    article=article1, score = 1.0)
-    feedback2 = ReadArticleFeedback(user_id = user.id, 
-                                    article=article2, score = 1.0)
-    
+    feedback1 = ReadArticleFeedback(user_id=user.id,
+                                    article=article1, score=1.0)
+    feedback2 = ReadArticleFeedback(user_id=user.id,
+                                    article=article2, score=1.0)
+
     feedback1.save()
     feedback2.save()
     #user.read_articles.append(feedback2)
-    
+
     #add learned user profile
-    user_model = UserModel(version = "1.0",
-                           user_id = user.id,
-                           data = features.data)
+    user_model = UserModel(version="1.0",
+                           user_id=user.id,
+                           data=features.data)
     user_model.save()
-    
+
     #save
     user.save()
 
+
 if __name__ == '__main__':
-    
     connect("nyan_test")
-    
+
     fill_database()
