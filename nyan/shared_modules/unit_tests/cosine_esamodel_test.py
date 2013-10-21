@@ -155,7 +155,7 @@ def get_samples(extractor,
     #SMOTE sample minorities
     #synthetic_read_articles = SMOTE(read_articles, p_synthetic_samples, k) 
     
-    #borderlineSMOTE sample minorites
+    #borderlineSMOTE sample minorities
     X = np.concatenate((read_articles, unread_articles)) 
     y = np.concatenate((read_marks, unread_marks))
     new_read_articles, synthetic_read_articles, danger_read_articles = borderlineSMOTE(X=X, y=y, minority_target=READ,
@@ -186,7 +186,7 @@ class TestCosineESAModel(unittest.TestCase):
     def setUp(self):
         logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
         
-        self.config_ = load_config(("/vagrant/config.yaml"), logger, exit_with_error = True)
+        self.config_ = load_config(("/vagrant/config.yaml"), logger, exit_with_error=True)
         
         if self.config_ is None:
             logger.error("No config. Exit.")
@@ -212,7 +212,7 @@ class TestCosineESAModel(unittest.TestCase):
                                    num_best_features=2,
                                    num_features=len(dictionary))
         
-        test_doc = ['graph', 'minors', 'trees'] # ['user', 'computer', 'time']#
+        test_doc = ['graph', 'minors', 'trees']  # ['user', 'computer', 'time']#
         tfidf_test_doc = tfidf_model[dictionary.doc2bow(test_doc)]
         
         #transform test doc to esa
@@ -222,7 +222,7 @@ class TestCosineESAModel(unittest.TestCase):
         #for concept_id, weight in sorted(esa_test_doc, key=lambda item: -item[1]):
         #    print "%s %.3f" % (esa_model.document_titles[concept_id], weight)
          
-    #@unittest.skip("Skip bigger test") 
+    @unittest.skip("Skip bigger test")
     def test_constructor_with_file_wikicorpus(self):
         
         #load tf-idf model
@@ -271,21 +271,22 @@ class TestCosineESAModel(unittest.TestCase):
 
         #train esa model
         esa_model = CosineEsaModel(tfidf_corpus, 
-                                   document_titles = document_titles,
+                                   document_titles=document_titles,
                                    test_corpus=X,
                                    test_corpus_targets=y,
                                    num_test_corpus=len(y),
                                    num_best_features=15,
                                    num_features=len(id2token))
-        
-        print esa_model
+
+        for line in esa_model:
+            print repr(line)
         
         esa_model.save('/vagrant/data/test_cesa.model')
         
         tmp_esa = CosineEsaModel.load('/vagrant/data/test_cesa.model')
         print tmp_esa  
         
-    @unittest.skip("too big")
+    #@unittest.skip("too big")
     def test_constructor_with_big_file_wikicorpus(self):
         
         #load tf-idf corpus
