@@ -29,7 +29,7 @@ from datetime import datetime
 import logging
 
 from nyan.shared_modules.models.mongodb_models import *
-from user_models import UserModelCentroid
+from nyan.shared_modules.user_models import UserModelCentroid
 
 
 logger = logging.getLogger("main")
@@ -37,8 +37,7 @@ logger = logging.getLogger("main")
 
 class ArticleRanker(object):
     def __init__(self, extractor):
-        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
-                            level=logging.DEBUG)
+        logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
 
         self.feature_extractor_ = extractor
 
@@ -83,7 +82,8 @@ class ArticleRanker(object):
 
         return stored_article
 
-    def save_rating(self, user, article, rating):
+    @staticmethod
+    def save_rating(user, article, rating):
         ranked_article = RankedArticle(user_id=user.id, article=article, rating=rating)
         ranked_article.save()
 
