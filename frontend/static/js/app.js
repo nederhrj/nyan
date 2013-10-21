@@ -6,13 +6,13 @@ function display_alert(type, message){
 
 function handle(event){
     var btn = $(event.target)
-    if(btn.attr('data-subscripe-vendor') != undefined) {
+    if(btn.attr('data-subscribe-vendor') != undefined) {
         $.post($SCRIPT_ROOT + "/ajax_subscribe",
-            {vendor_id : btn.attr('data-subscripe-vendor')})
+            {vendor_id : btn.attr('data-subscribe-vendor')})
     }
-    else if(btn.attr('data-unsubscripe-vendor') != undefined) {
-        $.post($SCRIPT_ROOT + "/ajax_unsubscripe", 
-            {vendor_id : btn.attr('data-unsubscripe-vendor')})
+    else if(btn.attr('data-unsubscribe-vendor') != undefined) {
+        $.post($SCRIPT_ROOT + "/ajax_unsubscribe",
+            {vendor_id : btn.attr('data-unsubscribe-vendor')})
     }  
 }
 
