@@ -79,7 +79,8 @@ class StompListener(object):
     def rank_article(self, article_as_dict):
         self.ranker.rank_article(article_as_dict)
 
-    def on_error(self, hears, message):
+    @staticmethod
+    def on_error(self, message):
         logger.error('received an error %s' % message)
 
     def on_message(self, headers, message):
