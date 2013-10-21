@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,41 +20,34 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
-'''
+"""
 Created on 22.11.2012
 
 @author: karsten jeschkies <jeskar@web.de>
-'''
-from nyan.feature_extractor.extractors import (EsaFeatureExtractor,
-                                          TfidfFeatureExtractor, 
-                                          LdaFeatureExtractor)
+"""
+from nyan.feature_extractor.extractors import (EsaFeatureExtractor, TfidfFeatureExtractor, LdaFeatureExtractor)
 import logging
 import unittest
-from utils.helper import load_config
+from nyan.shared_modules.utils.helper import load_config
 
 logger = logging.getLogger("unittesting")
 
+
 class LDAFeatureExtractorTest(unittest.TestCase):
 
-
     def setUp(self):
-        self.config = load_config(file_path = "/home/karten/Programmierung/frontend/config.yaml",
-                             logger = logger,
-                             exit_with_error = True)
-
+        self.config = load_config(file_path="/vagrant/config.yaml", logger=logger, exit_with_error=True)
 
     def tearDown(self):
         pass
 
-
     def test_get_feature_number(self):
-        feature_extractor = LdaFeatureExtractor(prefix = self.config['prefix'])
+        feature_extractor = LdaFeatureExtractor(prefix=self.config['prefix'])
         
         num_topics = feature_extractor.get_feature_number()
         self.assertEqual(500, num_topics)
-
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

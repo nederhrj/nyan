@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,20 +20,21 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
-'''
+"""
 Created on 20.09.2012
 
 @author: karsten jeschkies <jeskar@web.de>
-'''
+"""
 from nyan.article_ranker.article_ranker import ArticleRanker
 from nyan.feature_extractor.extractors import EsaFeatureExtractor
 from FillTestDatabase import fill_database, clear_database
 import logging
 
-from nyan.shared_modules.models.mongodb_models import *
 from mongoengine import *
+from nyan.shared_modules.models.mongodb_models import *
+
 import unittest
 from nyan.shared_modules.utils.helper import load_config
 
@@ -47,10 +48,10 @@ class ArticleRankerTest(unittest.TestCase):
 
     def setUp(self):
         fill_database()
-        config_ = load_config(file_path="/vagrant/config.yaml", logger = logger)
+        config_ = load_config(file_path="/vagrant/config.yaml", logger=logger)
         self.feature_extractor = EsaFeatureExtractor(prefix=config_['prefix'])
         self.ranker = ArticleRanker(extractor=self.feature_extractor)
-        self.article_as_dict = {'news_vendor': 'TechCrunch', 
+        self.article_as_dict = {'news_vendor': 'TechCrunch',
                                 'author': "MG Siegler",
                                 'link': "http://www.techcrunch.com",
                                 'headline': "Again Apple",
@@ -68,41 +69,40 @@ class ArticleRankerTest(unittest.TestCase):
 
     def test_get_vendor_false(self):
         vendor = self.ranker.get_vendor({'news_vendor': 'not in db'})
-        
+
         self.assertEqual(vendor, None)
-        
+
     def test_get_vendor(self):
         vendor = self.ranker.get_vendor(self.article_as_dict)
 
         self.assertEqual(vendor.config, 'vendor config')
-        
+
     def test_save_article_false(self):
-        vendor = self.ranker.get_vendor(self.article_as_dict)  
-        stored_article = self.ranker.save_article(vendor, 
-                                                  {'headline': "Everything else is missing."})
-        
+        vendor = self.ranker.get_vendor(self.article_as_dict)
+        stored_article = self.ranker.save_article(vendor, {'headline': "Everything else is missing."})
+
         self.assertEqual(stored_article, None)
-        
-    def test_save_article(self): 
-        vendor = self.ranker.get_vendor(self.article_as_dict)  
+
+    def test_save_article(self):
+        vendor = self.ranker.get_vendor(self.article_as_dict)
         stored_article = self.ranker.save_article(vendor, self.article_as_dict)
-        
+
         self.assertEqual(stored_article.author, 'MG Siegler')
-        
+
     def test_save_rating(self):
-        vendor = self.ranker.get_vendor(self.article_as_dict)  
+        vendor = self.ranker.get_vendor(self.article_as_dict)
         stored_article = self.ranker.save_article(vendor, self.article_as_dict)
-        user = User.objects(name="Karsten Jeschkies").first()
+        user = User.objectos(name="Karsten Jeschkies").first()
         self.ranker.save_rating(user=user, article=stored_article, rating=1.0)
-        
+
         user.reload()
-        ranked_articles = RankedArticle.objects(user_id = user.id)
+        ranked_articles = RankedArticle.objects(user_id=user.id)
         self.assertEqual(3, ranked_articles.count())
-        self.assertEqual(1.0, ranked_articles[0].rating) 
+        self.assertEqual(1.0, ranked_articles[0].rating)
 
     def test_rank_article(self):
         pass
-        #some error in genism. probably because some features are not quite right
+        #some error in gensim. probably because some features are not quite right
         self.ranker.rank_article(self.article_as_dict)
 
 
