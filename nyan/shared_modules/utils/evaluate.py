@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''
+
+from __future__ import division
+
+"""
 The MIT License (MIT)
 Copyright (c) 2012-2013 Karsten Jeschkies <jeskar@web.de>
 
@@ -20,9 +23,9 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
-'''
+"""
 Created on 12.11.2012
 
 @author: karsten jeschkies <jeskar@web.de>
@@ -36,25 +39,18 @@ and f1-score.
         -------------------------------
         read   |            |
 reality unread |            |
-'''
-from __future__ import division
-from nyan.feature_extractor.extractors import (EsaFeatureExtractor,
-                                          TfidfFeatureExtractor,
-                                          LdaFeatureExtractor,
-                                          LdaBowFeatureExtractor,
-                                          cEsaFeatureExtractor)
+"""
+
+from nyan.feature_extractor.extractors import (EsaFeatureExtractor, TfidfFeatureExtractor, LdaFeatureExtractor, LdaBowFeatureExtractor, cEsaFeatureExtractor)
 import logging
-from models.mongodb_models import (Article, Features, User, UserModel, 
-                                   RankedArticle, ReadArticleFeedback)
+from models.mongodb_models import (Article, Features, User, UserModel, RankedArticle, ReadArticleFeedback)
 from mongoengine import *
 import numpy as np
 from random import sample
-from sets import Set
 from sklearn import metrics
 import sys
-from user_models import (UserModelBayes, UserModelCentroid, 
-                         UserModelSVM, UserModelMeta, UserModelTree)
-from utils.helper import load_config
+from nyan.shared_modules.user_models import (UserModelBayes, UserModelCentroid, UserModelSVM, UserModelMeta, UserModelTree)
+from nyan.shared_modules.utils.helper import load_config
 
 logger = logging.getLogger("main")
 
@@ -83,39 +79,39 @@ if __name__ == '__main__':
     logger.info('#' * 80 + '\nStart evaluation')
     logger.info("Load config...")
     
-    config_ = load_config(options.config, logger, exit_with_error = True)
+    config_ = load_config(options.config, logger, exit_with_error=True)
     N_ITERATIONS = 10
         
-    if config_ == None:
+    if config_ is None:
         logger.error("No config. Exit.")
         sys.exit(1)
         
     #Connect to mongo database
     connect(config_['database']['db-name'], 
-            username= config_['database']['user'], 
-            password= config_['database']['passwd'], 
-            port = config_['database']['port'])
+            username=config_['database']['user'],
+            password=config_['database']['passwd'],
+            port=config_['database']['port'])
     
     #Load feature extractor
     #feature_extractor = EsaFeatureExtractor(prefix = config_['prefix'])
     #feature_extractor = TfidfFeatureExtractor(prefix = config_['prefix'])
     #feature_extractor = LdaFeatureExtractor(prefix = config_['prefix'])
     #feature_extractor = LdaBowFeatureExtractor(prefix = config_['prefix'])
-    feature_extractor = cEsaFeatureExtractor(prefix = config_['prefix'])
+    feature_extractor = cEsaFeatureExtractor(prefix=config_['prefix'])
     
     #get user
-    user = User.objects(email=u"jeskar@web.de").first()
+    user = User.objects(email=u"test@testmail.com").first()
     
     ranked_article_ids = (a.article.id 
                           for a 
-                          in RankedArticle.objects(user_id = user.id).only("article"))
-    all_article_ids = Set(a.id 
+                          in RankedArticle.objects(user_id=user.id).only("article"))
+    all_article_ids = set(a.id
                           for a 
-                          in Article.objects(id__in = ranked_article_ids).only("id"))
+                          in Article.objects(id__in=ranked_article_ids).only("id"))
     
-    read_article_ids = Set(a.article.id 
+    read_article_ids = set(a.article.id
                            for a 
-                           in ReadArticleFeedback.objects(user_id = user.id).only("article"))
+                           in ReadArticleFeedback.objects(user_id=user.id).only("article"))
     
     unread_article_ids = all_article_ids - read_article_ids
 
@@ -140,8 +136,8 @@ if __name__ == '__main__':
                 #unread_article_ids = Set(sample(unread_article_ids, len(read_article_ids)))
         
                 #get ids for evaluation
-                evaluation_set_unread = Set(sample(unread_article_ids,200))
-                evaluation_set_read = Set(sample(read_article_ids, 10))
+                evaluation_set_unread = set(sample(unread_article_ids,200))
+                evaluation_set_read = set(sample(read_article_ids, 10))
                 
                 #get rest for training
                 training_set_unread = unread_article_ids - evaluation_set_unread    
@@ -173,8 +169,8 @@ if __name__ == '__main__':
                 #user_model = UserModelCentroid(user_id = user.id,
                 #                               extractor = feature_extractor)
                 
-                user_model = UserModelSVM(user_id = user.id,
-                                          extractor = feature_extractor)
+                user_model = UserModelSVM(user_id=user.id,
+                                          extractor=feature_extractor)
                 
                 #user_model = UserModelTree(user_id = user.id,
                 #                           extractor = feature_extractor)
@@ -185,8 +181,8 @@ if __name__ == '__main__':
                 #user_model = UserModelMeta(user_id = user.id,
                 #                           extractor = feature_extractor)
                 
-                user_model.train(read_article_ids = training_set_read, 
-                                 unread_article_ids = training_set_unread)
+                user_model.train(read_article_ids=training_set_read,
+                                 unread_article_ids=training_set_unread)
                 
                 #Set y_true
                 y_true = np.empty(shape=(len(evaluation_set_read) + len(evaluation_set_unread)))
@@ -195,16 +191,16 @@ if __name__ == '__main__':
                 
                 #Set y_pred
                 y_pred = np.empty(shape=(y_true.shape[0]))
-                predicted_insteresting_headlines = list()
+                predicted_interesting_headlines = list()
                 actual_interesting_headlines = list()
                 
                 #predict with other subset and record measures
                 for i, article_id in enumerate(evaluation_set_read):
-                    article = Article.objects(id = article_id).first()
+                    article = Article.objects(id=article_id).first()
                     if article is None: continue
                     
                     #Predict and record result
-                    result = user_model.rank(doc = article)
+                    result = user_model.rank(doc=article)
                     y_pred[i] = result
                     
                     #Redcord headline
@@ -213,8 +209,8 @@ if __name__ == '__main__':
                         
                     actual_interesting_headlines.append(article.headline)
             
-                for i, article_id in enumerate(evaluation_set_unread, start = len(evaluation_set_read)):
-                    article = Article.objects(id = article_id).first()
+                for i, article_id in enumerate(evaluation_set_unread, start=len(evaluation_set_read)):
+                    article = Article.objects(id=article_id).first()
                     if article is None: continue
                     
                     #Predict and record result
@@ -225,7 +221,7 @@ if __name__ == '__main__':
                 #calculate precision, recall and f1 score
                 precisions, recalls, f1_scores, _ = metrics.precision_recall_fscore_support(y_true, 
                                                                                             y_pred, 
-                                                                                            pos_label = user_model.READ)
+                                                                                            pos_label=user_model.READ)
                     
                 #add score etc.
                 predicted_interesting[iteration] = np.sum(y_pred == user_model.READ)
