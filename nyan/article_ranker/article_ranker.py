@@ -29,7 +29,7 @@ from datetime import datetime
 import logging
 
 from nyan.shared_modules.models.mongodb_models import *
-from nyan.shared_modules.user_models import UserModelCentroid
+from nyan.shared_modules.user_models import UserModelSVM, UserModelCentroid
 
 
 logger = logging.getLogger("main")
