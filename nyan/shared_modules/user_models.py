@@ -21,8 +21,6 @@ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTIO
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
-from bson import ObjectId
-import numpy
 
 """
 Created on 29.10.2012
@@ -32,6 +30,7 @@ Created on 29.10.2012
 Several different user models for capturing a user's interests.
 """
 
+import numpy as np
 import cPickle
 from gensim import matutils, similarities
 from itertools import chain, izip
@@ -126,14 +125,22 @@ class UserModelCentroid(UserModelBase):
     Analysis & Experimental Results" ,2000
     """
 
+    # Class vars
     READ = 2
     UNREAD = 1
 
     @classmethod
     def get_version(cls):
         return "UserModelCentroid-1.0"
-     
-    def train(self, read_article_ids=None, unread_article_ids= None):
+
+    def __init__(self, user_id, extractor):
+        super(UserModelCentroid, self).__init__(user_id, extractor)
+
+        # instance vars
+        self.user_model_features = []
+        self.learned_user_model = UserModel.objects(user_id=self.user.id).first()
+
+    def train(self, read_article_ids=None, unread_article_ids=None):
         #Load user feedback if needed
         if read_article_ids is None:
             read_article_ids = (r.article.id for r in ReadArticleFeedback.objects(user_id=self.user.id).only("article"))
@@ -143,7 +150,7 @@ class UserModelCentroid(UserModelBase):
         #TODO: cluster feedback articles and save more than one profile
         
         num_loaded_articles = 0
-        centroid = numpy.zeros(self.num_features_, dtype=numpy.float32)
+        centroid = np.zeros(self.num_features_, dtype=np.float32)
 
         for article in user_feedback:
             try:
@@ -156,7 +163,7 @@ class UserModelCentroid(UserModelBase):
             tmp_doc = matutils.unitvec(article_features_as_full_vec)
             
             #add up tmp_doc
-            centroid = numpy.add(centroid, tmp_doc)
+            centroid = np.add(centroid, tmp_doc)
             num_loaded_articles += 1 
             
         #average each element
@@ -167,12 +174,12 @@ class UserModelCentroid(UserModelBase):
         
         #set user model data
         self.user_model_features = [centroid]
-        
+
     def save(self): 
         #replace old user model with new
         try:
             #replace profile
-            pickled_user_model_features = cPickle.dumps(self.user_model_features).decode('utf-8')
+            pickled_user_model_features = cPickle.dumps(self.learned_user_model.data).decode('utf-8')
             UserModel.objects(user_id=self.user.id).update(upsert=True, set__user_id=self.user.id,
                                                            set__data=pickled_user_model_features,
                                                            set__version=self.get_version())
@@ -187,16 +194,17 @@ class UserModelCentroid(UserModelBase):
         """
         
         learned_user_model = UserModel.objects(user_id=self.user.id).first()
-        
-        if learned_user_model is None:
-            self.user_model_features = []
-            return
-        
+        #
+        #if learned_user_model is None:
+        #    self.user_model_features = []
+        #    return
+        #
         #get learned profile/model
         #convert features to list of tuples. 
         #we make a double list because we will have more than one model soon.
-        self.user_model_features = [[tuple(a) for a in learned_user_model.data] for profile in self.user.learned_profile]
-            
+        #self.user_model_features = [[tuple(a) for a in learned_user_model.data] for profile in self.user.learned_profile]
+        self.user_model_features = [[tuple(a) for a in learned_user_model.data]]
+
     def rank(self, doc):
         """
         Returns a ranking of the document to learnt model.
@@ -209,10 +217,13 @@ class UserModelCentroid(UserModelBase):
         if len(self.user_model_features) == 0:
             logger.error("Learned user model seems to be empty.")
             return None
-                
-        index = similarities.SparseMatrixSimilarity(self.user_model_features, num_terms=self.num_features_, num_best=1,
+
+        unpickled_user_model_data = cPickle.loads(self.user_model_features.data.encode('utf-8'))
+        index = similarities.SparseMatrixSimilarity(unpickled_user_model_data,
+                                                    num_terms=self.num_features_,
+                                                    num_best=1,
                                                     num_features=self.num_features_,
-                                                    num_docs=len(self.user_model_features))
+                                                    num_docs=len(unpickled_user_model_data))
             
         #convert features to list of tuples
         news_article_features = list(tuple(a) for a in doc.features.data)
@@ -227,7 +238,7 @@ class UserModelCentroid(UserModelBase):
         
         #convert sim from numpy.float32 to native float
         try:
-            native_sim = numpy.asscalar(sim[0][1])
+            native_sim = np.asscalar(sim[0][1])
         except IndexError as e:
             logger.error("Could not access similarity: %s. Similarity: %s. User model: %s"
                          % (e, sim, self.user_model_features))
@@ -255,6 +266,10 @@ class UserModelBayes(UserModelBase):
 
     READ = 2
     UNREAD = 1
+
+    def __init__(self, user_id, extractor):
+        super(UserModelBayes, self).__init__(user_id, extractor)
+        self.clf = GaussianNB()
 
     @classmethod
     def get_version(cls):
@@ -331,9 +346,8 @@ class UserModelBayes(UserModelBase):
         
         #convert all article features
         all_articles = UserModelBayes.AllArticles(read_articles, unread_articles, self.get_features)
-            
-        self.clf = GaussianNB()
-        self.clf.fit(numpy.array(list(all_articles)), numpy.array(list(all_articles.get_marks())))
+
+        self.clf.fit(np.array(list(all_articles)), np.array(list(all_articles.get_marks())))
         
     def save(self):
         #replace old user model with new
@@ -343,9 +357,9 @@ class UserModelBayes(UserModelBase):
             
             #replace profile
             UserModel.objects(user_id=self.user.id).update(upsert=True,
-                                                             set__user_id=self.user.id,
-                                                             set__data=pickled_classifier,
-                                                             set__version=self.get_version())
+                                                           set__user_id=self.user.id,
+                                                           set__data=pickled_classifier,
+                                                           set__version=self.get_version())
             
         except Exception as inst:
             logger.error("Could not save learned user model due to unknown error %s: %s" % (type(inst), inst))
@@ -387,7 +401,7 @@ class UserModelBayes(UserModelBase):
             logger.error("No classifier for user %s." % self.user.id)
             raise NoClassifier("Bayes Classifier for user %s seems to be None." % self.user.id)
 
-        data = numpy.empty(shape=(1,self.num_features_), dtype=numpy.float32)
+        data = np.empty(shape=(1, self.num_features_), dtype=np.float32)
         
         data[0] = self.get_features(doc)
         prediction = self.clf.predict(data)
@@ -420,12 +434,12 @@ class UserModelSVM(UserModelBayes):
         
         _, n_features = X.shape
 
-        self.theta_ = numpy.zeros((n_features))
-        self.sigma_ = numpy.zeros((n_features))
+        self.theta_ = np.zeros((n_features))
+        self.sigma_ = np.zeros((n_features))
         epsilon = 1e-9
 
-        self.theta_[:] = numpy.mean(X[:,:], axis=0)
-        self.sigma_[:] = numpy.std(X[:,:], axis=0) + epsilon
+        self.theta_[:] = np.mean(X[:,:], axis=0)
+        self.sigma_[:] = np.std(X[:,:], axis=0) + epsilon
         
     def _normalize(self, X):
         """
@@ -440,7 +454,7 @@ class UserModelSVM(UserModelBayes):
             
         n_samples, n_features = X.shape
         
-        new_X = numpy.zeros(shape=(n_samples, n_features), dtype=numpy.float32)
+        new_X = np.zeros(shape=(n_samples, n_features), dtype=np.float32)
         
         try:
             new_X[:,:] = (X[:,:] - self.theta_[:]) / self.sigma_[:]
@@ -459,7 +473,7 @@ class UserModelSVM(UserModelBayes):
         """
         read_article_ids : Set
         unread_article_ids : Set
-        p_synthetic_samples : Percentage of snythetic samples, 300 for 300% 
+        p_synthetic_samples : Percentage of synthetic samples, 300 for 300%
                               If None no are created 
         p_majority_samples : Size of majority sample = p_majority_samples/n_minority_sample, 
                              500 for 500%
@@ -474,13 +488,16 @@ class UserModelSVM(UserModelBayes):
         
         #Under-sample unread ids
         if p_majority_samples is not None:
-            unread_article_ids = set(sample(unread_article_ids, min(p_majority_samples/100 * len(read_article_ids),
-                                                                    len(unread_article_ids))))
+            unread_article_ids = set(sample(unread_article_ids,
+                                            min(p_majority_samples/100 * len(read_article_ids),
+                                                len(unread_article_ids))
+                                            )
+                                     )
         
         #Create unread article vectors
-        unread_marks = numpy.empty(len(unread_article_ids))
+        unread_marks = np.empty(len(unread_article_ids))
         unread_marks.fill(UserModelSVM.UNREAD)
-        unread_articles = numpy.empty(shape=(len(unread_article_ids), self.num_features_))
+        unread_articles = np.empty(shape=(len(unread_article_ids), self.num_features_))
 
         for i, article in enumerate(Article.objects(id__in=unread_article_ids)):
             try:
@@ -491,9 +508,9 @@ class UserModelSVM(UserModelBayes):
                              % (article.id, e))  
                 
         #Create read article vectors
-        read_marks = numpy.empty(len(read_article_ids))
+        read_marks = np.empty(len(read_article_ids))
         read_marks.fill(UserModelSVM.READ)
-        read_articles = numpy.empty(shape=(len(read_article_ids), self.num_features_))
+        read_articles = np.empty(shape=(len(read_article_ids), self.num_features_))
         
         for i, article in enumerate(Article.objects(id__in=read_article_ids)):
             try:
@@ -506,12 +523,12 @@ class UserModelSVM(UserModelBayes):
         #synthetic_read_articles = SMOTE(read_articles, p_synthetic_samples, k) 
         
         #borderlineSMOTE sample minorities if p_synthetic_samples not None
-        X = numpy.concatenate((read_articles, unread_articles)) 
+        X = np.concatenate((read_articles, unread_articles))
         
         self._calculate_mean_and_std_deviation(X)
         X = self._normalize(X)
         
-        y = numpy.concatenate((read_marks, unread_marks))
+        y = np.concatenate((read_marks, unread_marks))
         if p_synthetic_samples is None:
             return X, y
         else:
@@ -519,24 +536,24 @@ class UserModelSVM(UserModelBayes):
                 borderlineSMOTE(X=X, y=y,minority_target=UserModelSVM.READ, N=p_synthetic_samples, k=k)
             
             #Create synthetic read samples
-            synthetic_marks = numpy.zeros(len(synthetic_read_articles))
+            synthetic_marks = np.zeros(len(synthetic_read_articles))
             synthetic_marks.fill(UserModelSVM.READ)  
             
-            read_marks = numpy.empty(len(new_read_articles))
+            read_marks = np.empty(len(new_read_articles))
             read_marks.fill(UserModelSVM.READ)  
             
-            danger_read_marks = numpy.empty(len(danger_read_articles))
+            danger_read_marks = np.empty(len(danger_read_articles))
             danger_read_marks.fill(UserModelSVM.READ)   
             
             logger.info("Use %d read, %d unread, %d danger reads and %d synthetic samples." %
                         (len(read_marks), len(unread_marks), 
                          len(danger_read_marks), len(synthetic_marks)))
         
-            return (numpy.concatenate((new_read_articles, 
+            return (np.concatenate((new_read_articles,
                                        synthetic_read_articles, 
                                        danger_read_articles,
                                        unread_articles)),
-                    numpy.concatenate((read_marks, 
+                    np.concatenate((read_marks,
                                       synthetic_marks, 
                                       danger_read_marks,
                                       unread_marks))
@@ -641,7 +658,7 @@ class UserModelSVM(UserModelBayes):
             logger.error("No classifier for user %s." % self.user.id)
             raise NoClassifier("SVM Classifier for user %s seems to be None." % self.user.id)
 
-        data = numpy.empty(shape=(1,self.num_features_), dtype=numpy.float32)
+        data = np.empty(shape=(1,self.num_features_), dtype=np.float32)
         
         data[0] = self.get_features(doc)
         data = self._normalize(data)
@@ -828,15 +845,15 @@ class UserModelMeta(UserModelSVM):
         
         #check if classifiers were loaded
 
-        data = numpy.empty(shape=(1,self.num_features_), dtype=numpy.float32)
+        data = np.empty(shape=(1,self.num_features_), dtype=np.float32)
         
         data[0] = self.get_features(doc)
-        predictions = numpy.empty(shape=(len(self.classifiers_)))
+        predictions = np.empty(shape=(len(self.classifiers_)))
         for i, clf in enumerate(self.classifiers_):
             predictions[i] = clf.predict(data)
 
         #Evaluate votes
-        uniques = numpy.unique(predictions)
+        uniques = np.unique(predictions)
         
         if len(uniques) == 1:
             return uniques[0]
