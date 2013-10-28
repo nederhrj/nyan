@@ -10,7 +10,7 @@ from nyan.shared_modules.models.mongodb_models import *
 
 def add_vendors():
     for vendor in ["techcrunch", "allthingsd", "allfacebook", "androidandme", "anandtech", "boingboing", "bgr", "engadget"]:
-        logging.info("add vendor" + vendor)
+        logging.info("add vendor: " + vendor)
         vendor = Vendor(name=vendor, config="vendor config " + vendor)
         vendor.save()
 

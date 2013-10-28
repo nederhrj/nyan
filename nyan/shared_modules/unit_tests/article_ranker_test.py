@@ -92,7 +92,7 @@ class ArticleRankerTest(unittest.TestCase):
     def test_save_rating(self):
         vendor = self.ranker.get_vendor(self.article_as_dict)
         stored_article = self.ranker.save_article(vendor, self.article_as_dict)
-        user = User.objectos(name="Karsten Jeschkies").first()
+        user = User.objects(email="test@testmail.com").first()
         self.ranker.save_rating(user=user, article=stored_article, rating=1.0)
 
         user.reload()

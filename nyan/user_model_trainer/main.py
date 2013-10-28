@@ -29,7 +29,7 @@ import sys
 
 from mongoengine import *
 
-from extractors import EsaFeatureExtractor
+from extractors import EsaFeatureExtractor, TfidfFeatureExtractor
 #from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor
 from nyan.shared_modules.models.mongodb_models import User
 from nyan.shared_modules.user_models import UserModelCentroid
@@ -69,7 +69,7 @@ if __name__ == '__main__':
             password=config_['database']['passwd'],
             port=config_['database']['port'])
 
-    feature_extractor = EsaFeatureExtractor(prefix=config_['prefix'])
+    feature_extractor = TfidfFeatureExtractor(prefix=config_['prefix'])
 
     logger.info("Learn user model...")
     users = User.objects()
