@@ -15,6 +15,7 @@
 from nyan.article_ranker.article_ranker import ArticleRanker
 from nyan.feature_extractor.extractors import TfidfFeatureExtractor
 from FillTestDatabase import fill_database, clear_database
+from create_vendor_table_test import add_vendors
 import logging
 import json
 
@@ -34,6 +35,7 @@ class ArticleRankerTest(unittest.TestCase):
 
     def setUp(self):
         fill_database()
+        add_vendors()
         config_ = load_config(file_path="/vagrant/config.yaml", logger=logger)
         self.feature_extractor = TfidfFeatureExtractor(prefix=config_['prefix'])
         self.ranker = ArticleRanker(extractor=self.feature_extractor)
