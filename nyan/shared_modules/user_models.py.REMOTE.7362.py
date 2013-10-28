@@ -40,7 +40,7 @@ from models.mongodb_models import (Article, User, UserModel, Features, ReadArtic
 from mongoengine import queryset
 
 from random import sample
-#from naive_bayes import GaussianNB #iterative GaussianNB
+#from naive_bayes import GaussianNB #iterative GaussainNB
 from sklearn.naive_bayes import GaussianNB
 from sklearn import svm, tree
 from smote import borderlineSMOTE

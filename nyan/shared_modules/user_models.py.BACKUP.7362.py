@@ -203,7 +203,11 @@ class UserModelCentroid(UserModelBase):
         #convert features to list of tuples. 
         #we make a double list because we will have more than one model soon.
         #self.user_model_features = [[tuple(a) for a in learned_user_model.data] for profile in self.user.learned_profile]
+<<<<<<< HEAD
+        self.user_model_features = [tuple(a) for a in learned_user_model.data]
+=======
         self.user_model_features = [[tuple(a) for a in learned_user_model.data]]
+>>>>>>> develop
 
     def rank(self, doc):
         """
