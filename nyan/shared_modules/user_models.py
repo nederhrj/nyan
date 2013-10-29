@@ -179,9 +179,9 @@ class UserModelCentroid(UserModelBase):
         #replace old user model with new
         try:
             #replace profile
-            pickled_user_model_features = cPickle.dumps(self.learned_user_model.data).decode('utf-8')
-            UserModel.objects(user_id=self.user.id).update(upsert=True, set__user_id=self.user.id,
-                                                           set__data=pickled_user_model_features,
+            UserModel.objects(user_id=self.user.id).update(upsert=True,
+                                                           set__user_id=self.user.id,
+                                                           set__data=self.user_model_features,
                                                            set__version=self.get_version())
         except Exception as inst:
             logger.error("Could not save learned user model due to unknown error %s: %s" % (type(inst), inst))
@@ -193,7 +193,7 @@ class UserModelCentroid(UserModelBase):
         NOTE: No feature conversion is done!
         """
         
-        learned_user_model = UserModel.objects(user_id=self.user.id).first()
+        #learned_user_model = UserModel.objects(user_id=self.user.id).first()
         #
         #if learned_user_model is None:
         #    self.user_model_features = []
@@ -203,7 +203,7 @@ class UserModelCentroid(UserModelBase):
         #convert features to list of tuples. 
         #we make a double list because we will have more than one model soon.
         #self.user_model_features = [[tuple(a) for a in learned_user_model.data] for profile in self.user.learned_profile]
-        self.user_model_features = [tuple(a) for a in learned_user_model.data]
+        self.user_model_features = [tuple(a) for a in self.learned_user_model.data]
 
     def rank(self, doc):
         """
@@ -218,12 +218,11 @@ class UserModelCentroid(UserModelBase):
             logger.error("Learned user model seems to be empty.")
             return None
 
-        unpickled_user_model_data = cPickle.loads(self.user_model_features.data.encode('utf-8'))
-        index = similarities.SparseMatrixSimilarity(unpickled_user_model_data,
+        index = similarities.SparseMatrixSimilarity(self.user_model_features,
                                                     num_terms=self.num_features_,
                                                     num_best=1,
                                                     num_features=self.num_features_,
-                                                    num_docs=len(unpickled_user_model_data))
+                                                    num_docs=len(self.user_model_features))
             
         #convert features to list of tuples
         news_article_features = list(tuple(a) for a in doc.features.data)

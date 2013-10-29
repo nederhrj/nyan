@@ -71,7 +71,7 @@ class UserModelCentroidTest(unittest.TestCase):
     def test_train(self):
         self.trainer.train()
 
-        self.assertAlmostEqual(self.trainer.learned_user_models_data[0][1],
+        self.assertAlmostEqual(self.trainer.learned_user_model.data[0][1],
                                0.1553, 4)
 
     @unittest.skip("no saving yet")
