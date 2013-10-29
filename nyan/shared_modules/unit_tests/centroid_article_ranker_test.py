@@ -74,8 +74,6 @@ class ArticleRankerTest(unittest.TestCase):
         ranked_articles = RankedArticle.objects(user_id=user.id)
         ranked_articles_before = ranked_articles.count()
 
-        print user, vendor.name, stored_article.author
-
         # Store new ranked article
         self.ranker.save_rating(user=user, article=stored_article, rating=1.0)
 

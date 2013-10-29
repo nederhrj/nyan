@@ -62,7 +62,7 @@ class StompListener(object):
         self.stdout.write(str(msg) + end)
 
     def on_send(self, headers, body):
-        self.__print_async("SEND", headers, body)
+	self.__print_async("SEND", headers, body)
 
 
 def main_loop():
