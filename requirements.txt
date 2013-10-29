@@ -3,7 +3,7 @@ scipy
 pyyaml
 scikit-learn
 gensim
-stomp.py
+stomp.py==3.1.5
 flask
 flask-login
 mongoengine
