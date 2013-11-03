@@ -48,7 +48,7 @@ logger = logging.getLogger("py21578")
 
 def get_features(feature_extractor, doc):
     data = feature_extractor.get_features(doc)
-    return  matutils.sparse2full(data, feature_extractor.get_feature_number()) 
+    return matutils.sparse2full(data, feature_extractor.get_feature_number())
 
 
 def train_data(feature_extractor, samples):

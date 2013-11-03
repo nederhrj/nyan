@@ -34,7 +34,7 @@ import logging
 import sys
 
 from gensim import utils, corpora, models
-from nyan.shared_modules.feature_extractor.esa.esamodel import EsaModel
+#from nyan.shared_modules.feature_extractor.esa.esamodel import EsaModel
 
 from corpus import R8Split
 from database import FileDatabase
