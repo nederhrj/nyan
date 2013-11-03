@@ -67,14 +67,14 @@ class UserModelCentroidTest(unittest.TestCase):
     def tearDown(self):
         clear_database()
 
-    @unittest.skip("not for now")
+    #@unittest.skip("not for now")
     def test_train(self):
         self.trainer.train()
 
         self.assertAlmostEqual(self.trainer.learned_user_model.data[0][1],
                                0.1553, 4)
 
-    @unittest.skip("no saving yet")
+    #@unittest.skip("no saving yet")
     def test_save(self):
         self.trainer.train()
         self.trainer.save()
