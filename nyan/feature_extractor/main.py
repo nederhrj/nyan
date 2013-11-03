@@ -24,7 +24,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from extractors import EsaFeatureExtractor, TfidfFeatureExtractor
+from nyan.feature_extractor.extractors import EsaFeatureExtractor, TfidfFeatureExtractor
 import json
 import logging
 import socket

@@ -34,7 +34,7 @@ from mongoengine import *
 import stomp
 import yaml
 
-from article_ranker import ArticleRanker
+from nyan.article_ranker.article_ranker import ArticleRanker
 from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor, TfidfFeatureExtractor
 from nyan.shared_modules.utils.daemon import Daemon
 
