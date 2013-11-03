@@ -36,10 +36,7 @@ vendors:
                  div#module-post-detail.module-post-detail h1.headline"
       content:
         type: XPath
-        path: '/html/body/div[@id = "page-container"]/
-                 div[@class="column-container"]/div[@class="left-container"]/
-                 div[@id="module-post-detail"]/div[@class="body-copy"]/
-                 *[name() = "p" or name() = "img"]'
+        path: "/html/body/div/article/div/div/div/div/div/div[@class='l-main']/div[@class='article-entry text']"
   allthingsd:
     url: "http://allthingsd.com/"
     feed-url: "http://allthingsd.com/feed/"
@@ -69,7 +66,7 @@ vendors:
                 section#maincontent.col-main article.clearfix h2.col-main a"
       content:
         type: CSS
-        path: "html body article.post section.postcontent"
+        path: "html body div section#maincontent.col-main article section.postcontent"
   androidandme:
     url: "http://androidandme.com/"
     feed-url: "http://feeds.feedburner.com/androidandme"
@@ -83,8 +80,7 @@ vendors:
         path: "html body.single div#main section#main-content article h2.title a"
       content:
         type: CSS
-        path: "html body.single div#main section#main-content article 
-              div.entry-content"
+        path: "html body.single div#main section#main-content article"
   anandtech:
     url: "http://www.anandtech.com/"
     feed-url: "http://www.anandtech.com/rss/"
@@ -101,9 +97,7 @@ vendors:
                 div.sidepadding div.dottedheading a"
       content:
         type: CSS
-        path: "html body div#hold_me div#container_site div#container_width 
-                div#subpage.containerbody div.body_left div.subbox div.subcontent 
-                div.sidepadding p"
+        path: "html body section.content section.main_cont div.sidepadding"
   engadget:
     url: "http://www.engadget.com/"
     feed-url: "http://www.engadget.com/rss.xml"
@@ -119,8 +113,7 @@ vendors:
                 div.col1 div.blogroll div.post_content h1.post_title"
       content :
        type: CSS
-       path: "html body.home div.content_holder div.inner-padding 
-                div.col1 div.blogroll div.post_content div.post_body"
+       path: "html body div#page.container div#body article div.post-body div.copy"
   boingboing:
     url: "http://www.boingboing.net/"
     feed-url: "http://feeds.boingboing.net/boingboing/iBag"
@@ -133,7 +126,7 @@ vendors:
         path: "html body h2.headline a[rel=bookmark]"
       content:
         type: XPath
-        path: "/html/body/div/div/div/p[not(@class='byline')]"
+        path: "/html/body/div[3]/div[3]/div[4]/div/div[3]"
   bgr:
     url: "http://www.bgr.com/"
     feed-url: "http://www.bgr.com/feed/"
@@ -149,5 +142,5 @@ vendors:
                 div#main-content.yui3-u-2-3 div.post h1 a"
       content:
         type: XPath
-        path: "/html/body//div[@class='post-article']//p[not(@class='bgr-bas-bio') and not(@class='bgr-bas-viewall')]"
+        path: "/html/body/div/div/article/div/div/div/div"
 ...
