@@ -179,9 +179,11 @@ class UserModelCentroid(UserModelBase):
         #replace old user model with new
         try:
             #replace profile
+            #pickle classifier and decode it to utf-8
+            pickled_classifier = cPickle.dumps(self.user_model_features).decode('utf-8')
             UserModel.objects(user_id=self.user.id).update(upsert=True,
                                                            set__user_id=self.user.id,
-                                                           set__data=self.user_model_features,
+                                                           set__data=pickled_classifier,
                                                            set__version=self.get_version())
         except Exception as inst:
             logger.error("Could not save learned user model due to unknown error %s: %s" % (type(inst), inst))
@@ -192,6 +194,12 @@ class UserModelCentroid(UserModelBase):
         
         NOTE: No feature conversion is done!
         """
+        user_model = UserModel.objects(user_id=self.user.id).first()
+
+        if user_model is None:
+            logger.debug("UserModel for user %s is empty." % self.user.id)
+            self.clf = None
+            return
         
         #learned_user_model = UserModel.objects(user_id=self.user.id).first()
         #
@@ -203,6 +211,12 @@ class UserModelCentroid(UserModelBase):
         #convert features to list of tuples. 
         #we make a double list because we will have more than one model soon.
         #self.user_model_features = [[tuple(a) for a in learned_user_model.data] for profile in self.user.learned_profile]
+
+        #unpickle classifier. it was saved as a utf-8 string.
+        #get the str object by encoding it.
+        pickled_classifier = user_model.data.encode('utf-8')
+        self.clf = cPickle.loads(pickled_classifier)
+
         self.user_model_features = [tuple(a) for a in self.learned_user_model.data]
 
     def rank(self, doc):
@@ -212,7 +226,7 @@ class UserModelCentroid(UserModelBase):
         doc should be instance of mongodb_models.Article
         """
         
-        #self.load()
+        self.load()
         
         if len(self.user_model_features) == 0:
             logger.error("Learned user model seems to be empty.")
@@ -383,6 +397,8 @@ class UserModelBayes(UserModelBase):
             
             #unpickle classifier. it was saved as a utf-8 string.
             #get the str object by encoding it.
+            pickled_classifier = user_model.data.clf.encode('utf-8')
+
             pickled_classifier = user_model.data.encode('utf-8')
             self.clf = cPickle.loads(pickled_classifier)
                 
