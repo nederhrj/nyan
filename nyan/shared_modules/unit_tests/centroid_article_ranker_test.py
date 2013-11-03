@@ -57,7 +57,7 @@ class ArticleRankerTest(unittest.TestCase):
     def test_get_vendor(self):
         vendor = self.ranker.get_vendor(self.article_as_dict)
 
-        self.assertEqual(self.article_as_dict.get('news_vendor'), vendor)
+        self.assertEqual(self.article_as_dict.get('news_vendor'), vendor.name)
 
     def test_save_article(self):
         vendor = self.ranker.get_vendor(self.article_as_dict)
