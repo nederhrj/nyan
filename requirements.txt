@@ -13,3 +13,4 @@ pattern
 multiprocessing
 flask-debugtoolbar
 flask-mongoengine
+flask-runner

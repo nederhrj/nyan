@@ -13,6 +13,7 @@ import time
 
 from flask import (Flask, abort, redirect, url_for, render_template, request, flash)
 from flask.ext.login import (LoginManager, current_user, login_required, login_user, logout_user)
+from flask.ext.runner import Runner
 from gensim.corpora import Dictionary
 from mongoengine import *
 
@@ -34,6 +35,7 @@ logging.basicConfig(format='-' * 80 + '\n' +
 
 #Flask app
 app = Flask(__name__)
+runner = Runner(app)
 
 #salt for hashing etc.
 SALT = u""
@@ -423,4 +425,5 @@ def ajax_add_user():
 
 #Start app
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    #app.run(host='0.0.0.0')
+    runner.run()
