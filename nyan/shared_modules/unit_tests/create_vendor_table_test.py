@@ -9,7 +9,7 @@ from nyan.shared_modules.models.mongodb_models import *
 """ Creates vendors in mongodb """
 
 def add_vendors():
-    for vendor in ["techcrunch", "allthingsd", "allfacebook", "androidandme", "anandtech", "boingboing", "bgr", "engadget"]:
+    for vendor in ["techcrunch", "allthingsd", "allfacebook", "androidandme", "anandtech", "boingboing", "bgr", "engadget", "cnn-europe", "dutchnews"]:
         logging.info("add vendor: " + vendor)
         vendor = Vendor(name=vendor, config="vendor config " + vendor)
         vendor.save()

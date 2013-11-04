@@ -16,6 +16,7 @@ feeds:
   - boingboing
   - bgr
   - engadget
+  - cnn-europe
 #Config for each news outlet (vendor)
 #Paths can be CSS or XPath
 vendors:
@@ -143,4 +144,34 @@ vendors:
       content:
         type: XPath
         path: "/html/body/div/div/article/div/div/div/div"
+  cnn-europe:
+    url: "http://edition.cnn.com/EUROPE/"
+    feed-url: "http://rss.cnn.com/rss/edition_europe.rss"
+    scraping:
+      author:
+        type: CSS
+        path: "html body div#cnnContainer div.cnn_maincntnr div.cnn_containerwht
+                div#cnnContentContainer.cnn_storyarea div.cnn_stryathrtmp div.cnn_story_attribution
+                 table tbody tr td div.cnn_story_author div.cnnByline strong a"
+      headline:
+        type: CSS
+        path: "html body div#cnnContainer div.cnn_maincntnr div.cnn_containerwht
+                div#cnnContentContainer.cnn_storyarea h1"
+      content:
+        type: CSS
+        path: "html body div#cnnContainer div.cnn_maincntnr div.cnn_containerwht
+                div#cnnContentContainer.cnn_storyarea div.cnn_strycntntlft p"
+  dutchnews:
+  url: "http://www.dutchnews.nl/"
+  feed-url: "http://www.dutchnews.nl/news/index.xml"
+  scraping:
+    author:
+      type: CSS
+      path: ""
+    headline:
+      type: CSS
+      path: "html body table tbody tr td.kolommidden h3"
+    content:
+      type: CSS
+      path: "html body table tbody tr td.kolommidden"
 ...
