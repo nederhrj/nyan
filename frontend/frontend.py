@@ -338,7 +338,7 @@ def ajax_subscribe():
         abort(403)
 
     vendor_id = request.form['vendor_id']
-    app.logger.error("Subscribe user to %s" % vendor_id)
+    app.logger.debug("Subscribe user to %s" % vendor_id)
     try:
         new_vendor = Vendor.objects(id=vendor_id).first()
         current_user.add_vendor_to_subscriptions(new_vendor)
@@ -359,7 +359,7 @@ def ajax_unsubscribe():
 
     vendor_id = request.form['vendor_id']
 
-    app.logger.error("Unsubscribe user from %s" % vendor_id)
+    app.logger.debug("Unsubscribe user from %s" % vendor_id)
     try:
         vendor = Vendor.objects(id=vendor_id).first()
         current_user.remove_vendor_from_subscriptions(vendor)
