@@ -75,7 +75,7 @@ Start the message broker:
 
 Start the frontend:
 
--- "python frontend/frontend.py". You can access the login page at [http://127.0.0.1:5001](http://127.0.0.1:5001)
+-- "python frontend/frontend.py --host 0.0.0.0". You can access the login page at [http://127.0.0.1:5001](http://127.0.0.1:5001)
 
 Start the feature extractor as daemon:
 
