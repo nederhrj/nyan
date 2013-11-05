@@ -65,7 +65,8 @@ class UserModelCentroidTest(unittest.TestCase):
         self.trainer = UserModelCentroid(self.user_id, extractor=self.feature_extractor)
 
     def tearDown(self):
-        clear_database()
+        #clear_database()
+        pass
 
     #@unittest.skip("not for now")
     def test_train(self):
