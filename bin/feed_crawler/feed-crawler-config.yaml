@@ -17,7 +17,7 @@ feeds:
   - bgr
   - engadget
   - cnn-europe
-#  - dutchnews
+  - dutchnews
 #Config for each news outlet (vendor)
 #Paths can be CSS or XPath
 vendors:
