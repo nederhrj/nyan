@@ -13,10 +13,11 @@ feeds:
   - allfacebook
   - androidandme
   - anandtech
-  - boingboing
+#  - boingboing
   - bgr
   - engadget
   - cnn-europe
+#  - dutchnews
 #Config for each news outlet (vendor)
 #Paths can be CSS or XPath
 vendors:
@@ -126,21 +127,18 @@ vendors:
         type: CSS
         path: "html body h2.headline a[rel=bookmark]"
       content:
-        type: XPath
-        path: "/html/body/div[3]/div[3]/div[4]/div/div[3]"
+        type: CSS
+        path: "html body.single div#container div#mainbar div#posts-loop div.post div.post-content p"
   bgr:
     url: "http://www.bgr.com/"
     feed-url: "http://www.bgr.com/feed/"
     scraping:
       author:
         type: CSS
-        path: "html body div.yui3-g div#main.yui3-g div.wrap 
-                div#main-content div.post div.post-details 
-                div.post-writer a"
+        path: "html body div.yui3-g div#main.yui3-g div.wrap div#main-content div.post div.post-details div.post-writer a"
       headline:
         type: CSS
-        path: "html body div.yui3-g div#main.yui3-g div.wrap 
-                div#main-content.yui3-u-2-3 div.post h1 a"
+        path: "html body div.yui3-g div#main.yui3-g div.wrap div#main-content.yui3-u-2-3 div.post h1 a"
       content:
         type: XPath
         path: "/html/body/div/div/article/div/div/div/div"
@@ -162,16 +160,16 @@ vendors:
         path: "html body div#cnnContainer div.cnn_maincntnr div.cnn_containerwht
                 div#cnnContentContainer.cnn_storyarea div.cnn_strycntntlft p"
   dutchnews:
-  url: "http://www.dutchnews.nl/"
-  feed-url: "http://www.dutchnews.nl/news/index.xml"
-  scraping:
-    author:
-      type: CSS
-      path: ""
-    headline:
-      type: CSS
-      path: "html body table tbody tr td.kolommidden h3"
-    content:
-      type: CSS
-      path: "html body table tbody tr td.kolommidden"
+    url: "http://www.dutchnews.nl/"
+    feed-url: "http://www.dutchnews.nl/news/index.xml"
+    scraping:
+      author:
+        type: CSS
+        path: ""
+      headline:
+        type: CSS
+        path: "html body table tbody tr td.kolommidden h3"
+      content:
+        type: CSS
+        path: "html body table tbody tr td.kolommidden"
 ...
