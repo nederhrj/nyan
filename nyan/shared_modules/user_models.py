@@ -180,10 +180,10 @@ class UserModelCentroid(UserModelBase):
         try:
             #replace profile
             #pickle classifier and decode it to utf-8
-            pickled_classifier = cPickle.dumps(self.user_model_features).decode('utf-8')
+            #pickled_classifier = cPickle.dumps(self.user_model_features).decode('utf-8')
             UserModel.objects(user_id=self.user.id).update(upsert=True,
                                                            set__user_id=self.user.id,
-                                                           set__data=pickled_classifier,
+                                                           set__data=self.user_model_features,
                                                            set__version=self.get_version())
         except Exception as inst:
             logger.error("Could not save learned user model due to unknown error %s: %s" % (type(inst), inst))
@@ -214,8 +214,8 @@ class UserModelCentroid(UserModelBase):
 
         #unpickle classifier. it was saved as a utf-8 string.
         #get the str object by encoding it.
-        pickled_classifier = user_model.data.encode('utf-8')
-        self.clf = cPickle.loads(pickled_classifier)
+        #pickled_classifier = user_model.data.encode('utf-8')
+        #self.clf = cPickle.loads(pickled_classifier)
 
         self.user_model_features = [tuple(a) for a in self.learned_user_model.data]
 
