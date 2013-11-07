@@ -24,7 +24,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from nyan.feature_extractor.extractors import EsaFeatureExtractor, TfidfFeatureExtractor
+from nyan.feature_extractor.extractors import EsaFeatureExtractor, TfidfFeatureExtractor, LdaFeatureExtractor
 import json
 import logging
 import socket
@@ -47,7 +47,7 @@ class StompListener(object):
         self.logger_ = logging.getLogger("main")
         self.stdout = sys.stdout
 
-        self.extractor = TfidfFeatureExtractor(prefix=config['prefix'])
+        self.extractor = LdaFeatureExtractor(prefix=config['prefix'])
 
     def __print_async(self, frame_type, headers, body):
         """

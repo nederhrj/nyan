@@ -9,7 +9,7 @@ flask-login
 mongoengine
 nltk
 BeautifulSoup4
-pattern
+pattern==2.5
 multiprocessing
 flask-debugtoolbar
 flask-mongoengine

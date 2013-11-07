@@ -35,7 +35,7 @@ import stomp
 import yaml
 
 from nyan.article_ranker.article_ranker import ArticleRanker
-from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor, TfidfFeatureExtractor
+from nyan.shared_modules.feature_extractor.extractors import EsaFeatureExtractor, TfidfFeatureExtractor, LdaFeatureExtractor
 from nyan.shared_modules.utils.daemon import Daemon
 
 
@@ -68,7 +68,7 @@ class StompListener(object):
 
         logger.info("Load feature extractor.")
         try:
-            self.feature_extractor_ = TfidfFeatureExtractor(prefix=self.config_["prefix"])
+            self.feature_extractor_ = LdaFeatureExtractor(prefix=self.config_["prefix"])
         except Exception as inst:
             logger.error("Could not load feature extractor."
                          "Unknown error %s: %s" % (type(inst), inst))
